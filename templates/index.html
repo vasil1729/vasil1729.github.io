@@ -88,12 +88,10 @@
     <!-- Overview Section -->
     <section id="overview" class="reveal">
       <div class="section-head">
-        <div>
-          <div class="micro-label">About</div>
-          <h2>{{ section.extra.about_title }}</h2>
-        </div>
+        <div class="micro-label">About</div>
+        <h2>{{ section.extra.about_title }}</h2>
         <p>
-          {{ section.extra.about_description }}
+          {{ section.extra.about_description | safe }}
         </p>
       </div>
       <div class="panel-grid">
@@ -127,10 +125,8 @@
     <!-- Experience Section -->
     <section id="experience" class="reveal">
       <div class="section-head">
-        <div>
-          <div class="micro-label">History</div>
-          <h2>Professional experience.</h2>
-        </div>
+        <div class="micro-label">History</div>
+        <h2>Professional experience.</h2>
         <p>
           Leading architectural decisions and building critical backend infrastructure for companies and open-source ecosystems.
         </p>
@@ -161,10 +157,8 @@
     <!-- Projects Section -->
     <section id="projects" class="reveal">
       <div class="section-head">
-        <div>
-          <div class="micro-label">Projects</div>
-          <h2>Key engineering projects.</h2>
-        </div>
+        <div class="micro-label">Projects</div>
+        <h2>Key engineering projects.</h2>
         <p>
           Production-grade systems showcasing modular design, performance tuning, and clean software architecture.
         </p>
@@ -195,10 +189,8 @@
     <!-- Skills Section -->
     <section id="skills" class="reveal">
       <div class="section-head">
-        <div>
-          <div class="micro-label">Skills &amp; Community</div>
-          <h2>Technical background &amp; stacks.</h2>
-        </div>
+        <div class="micro-label">Skills &amp; Community</div>
+        <h2>Technical background &amp; stacks.</h2>
         <p>
           A comprehensive toolkit honed across systems development, web applications, and database optimizations.
         </p>
@@ -234,10 +226,8 @@
     <!-- Contact Section -->
     <section id="contact" class="reveal">
       <div class="section-head">
-        <div>
-          <div class="micro-label">Contact</div>
-          <h2>Let's build something together.</h2>
-        </div>
+        <div class="micro-label">Contact</div>
+        <h2>Let's build something together.</h2>
         <p>
           I am always open to consulting engagements, open-source collaborations, and speaking invitations.
         </p>
