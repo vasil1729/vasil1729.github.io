@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ section.title }}</title>
+  <meta name="description" content="{{ section.extra.hero_description }}" />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" type="image/png" href="imgs/avatar.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="{{ section.title }}" />
+  <meta property="og:description" content="{{ section.extra.about_description }}" />
+  <meta property="og:site_name" content="Vasil Abdul Razak" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell topbar">
+      <a class="brand" href="#top" aria-label="Vasil Abdul Razak home">
+        <span class="brand-name">Vasil Abdul Razak</span>
+        <span class="brand-role">{{ section.extra.subtitle }}</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open navigation">
+        <span class="nav-toggle-lines" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+      <nav id="primary-nav" class="nav" aria-label="Primary">
+        <a href="#overview">Overview</a>
+        <a href="#experience">Experience</a>
+        <a href="#projects">Projects</a>
+        <a href="#skills">Skills</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+  <main id="top" class="shell">
+    <!-- Hero Section -->
+    <section class="hero reveal" aria-labelledby="hero-title">
+      <div class="hero-layout">
+        <div class="hero-copy">
+          <div class="eyebrow">Founding Engineer at Wraft / Freelance Consultant</div>
+          <h1 id="hero-title">{{ section.extra.hero_title }}</h1>
+          <p>
+            {{ section.extra.hero_description }}
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="mailto:{{ section.extra.email }}">Contact Me</a>
+            <a class="button-muted" href="Vasil_resume_v3.pdf" download>Download Resume</a>
+            <a class="button-muted" href="https://github.com/{{ section.extra.github }}" target="_blank" rel="noopener noreferrer">GitHub</a>
+          </div>
+        </div>
+        <div class="hero-side">
+          <figure class="hero-avatar">
+            <img src="imgs/avatar.png" alt="Portrait of Vasil Abdul Razak" />
+          </figure>
+          <aside class="hero-panel" aria-label="Current roles">
+            <h2>Current roles</h2>
+            <ul class="hero-list">
+              <li>
+                <strong>2024-now</strong>
+                <span>Freelance Backend Engineer delivering custom solutions for ERP-focused platforms and business automation systems.</span>
+              </li>
+              <li>
+                <strong>2022-2024</strong>
+                <span>Founding Engineer &amp; Backend Owner at <a class="inline-link" href="https://github.com/wraft/wraft" target="_blank" rel="noopener noreferrer">Wraft</a>, designing collaborative document systems.</span>
+              </li>
+              <li>
+                <strong>Open Source</strong>
+                <span>Active contributor focused on Elixir, Phoenix, WebSockets, Oban workflow optimization, and Rust NIF integrations.</span>
+              </li>
+            </ul>
+          </aside>
+        </div>
+      </div>
+      <div class="metrics" aria-label="Key metrics">
+        {% for metric in section.extra.metrics %}
+          <article class="metric"><strong>{{ metric.val }}</strong><span>{{ metric.label }}</span></article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section id="overview" class="reveal">
+      <div class="section-head">
+        <div>
+          <div class="micro-label">About</div>
+          <h2>{{ section.extra.about_title }}</h2>
+        </div>
+        <p>
+          {{ section.extra.about_description }}
+        </p>
+      </div>
+      <div class="panel-grid">
+        <article class="feature">
+          <div class="card-header">
+            <div>
+              <div class="meta">Background</div>
+              <h3>{{ section.extra.about_background_title }}</h3>
+            </div>
+          </div>
+          <p>
+            {{ section.extra.about_background_p1 }}
+          </p>
+          <p>
+            {{ section.extra.about_background_p2 }}
+          </p>
+          <div class="signal-bar" aria-label="Operational metrics">
+            <div class="signal"><strong>Elixir/Phoenix</strong><span>Core Backend</span></div>
+            <div class="signal"><strong>WebSockets</strong><span>Real-time Sync</span></div>
+            <div class="signal"><strong>Kubernetes</strong><span>Deployment</span></div>
+            <div class="signal"><strong>Oban Pipelines</strong><span>Job Orchestration</span></div>
+          </div>
+        </article>
+        <aside class="quote-card">
+          <p>{{ section.extra.quote }}</p>
+          <span>Focus</span>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Experience Section -->
+    <section id="experience" class="reveal">
+      <div class="section-head">
+        <div>
+          <div class="micro-label">History</div>
+          <h2>Professional experience.</h2>
+        </div>
+        <p>
+          Leading architectural decisions and building critical backend infrastructure for companies and open-source ecosystems.
+        </p>
+      </div>
+      <div class="timeline">
+        {% for exp in section.extra.experiences %}
+          <article class="timeline-card">
+            <div class="card-header">
+              <div>
+                <div class="meta">{{ exp.date }}</div>
+                <h3>{{ exp.role }} @ {{ exp.company }}</h3>
+              </div>
+              {% if exp.location %}
+                <div class="meta">{{ exp.location }}</div>
+              {% endif %}
+            </div>
+            <p>{{ exp.desc }}</p>
+            <ul class="bullet-list">
+              {% for bullet in exp.bullets %}
+                <li>{{ bullet }}</li>
+              {% endfor %}
+            </ul>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="reveal">
+      <div class="section-head">
+        <div>
+          <div class="micro-label">Projects</div>
+          <h2>Key engineering projects.</h2>
+        </div>
+        <p>
+          Production-grade systems showcasing modular design, performance tuning, and clean software architecture.
+        </p>
+      </div>
+      <div class="project-grid">
+        {% for proj in section.extra.projects %}
+          <article class="card project-card">
+            <div class="project-top">
+              <h3>{{ proj.title }}</h3>
+              <div class="meta">{{ proj.category }}</div>
+            </div>
+            <p>{{ proj.desc }}</p>
+            <ul class="project-list">
+              {% for bullet in proj.bullets %}
+                <li>{{ bullet }}</li>
+              {% endfor %}
+            </ul>
+            {% if proj.github %}
+              <div class="link-row">
+                <a class="inline-link" href="{{ proj.github }}" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+              </div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="reveal">
+      <div class="section-head">
+        <div>
+          <div class="micro-label">Skills &amp; Community</div>
+          <h2>Technical background &amp; stacks.</h2>
+        </div>
+        <p>
+          A comprehensive toolkit honed across systems development, web applications, and database optimizations.
+        </p>
+      </div>
+      <div class="stack-grid">
+        <article class="card pub-card">
+          <h3>Recognition &amp; Community</h3>
+          <ul class="pub-list">
+            {% for item in section.extra.recognition %}
+              <li>
+                <strong>{{ item.title }}</strong>
+                <p>{{ item.desc }}</p>
+              </li>
+            {% endfor %}
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Core Technologies</h3>
+          {% for sk in section.extra.skills %}
+            <div class="stack-category">
+              <h4>{{ sk.category }}</h4>
+              <div class="stack-tags">
+                {% for tag in sk.tags %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </article>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="reveal">
+      <div class="section-head">
+        <div>
+          <div class="micro-label">Contact</div>
+          <h2>Let's build something together.</h2>
+        </div>
+        <p>
+          I am always open to consulting engagements, open-source collaborations, and speaking invitations.
+        </p>
+      </div>
+      <div class="closing-grid" style="grid-template-columns: 1fr;">
+        <article class="card">
+          <h3>Direct Links</h3>
+          <ul class="coverage-list">
+            <li>Email: <a class="inline-link" href="mailto:{{ section.extra.email }}">{{ section.extra.email }}</a></li>
+            <li>GitHub: <a class="inline-link" href="https://github.com/{{ section.extra.github }}" target="_blank" rel="noopener noreferrer">github.com/{{ section.extra.github }}</a></li>
+            <li>LinkedIn: <a class="inline-link" href="https://linkedin.com/in/{{ section.extra.linkedin }}" target="_blank" rel="noopener noreferrer">linkedin.com/in/{{ section.extra.linkedin }}</a></li>
+            <li>Phone: <span class="inline-link" style="color: inherit; font-weight: normal;">{{ section.extra.phone }}</span></li>
+          </ul>
+        </article>
+      </div>
+    </section>
+  </main>
+  <footer class="shell footer">
+    <div>Copyright &copy; 2026 Vasil Abdul Razak.</div>
+    <div class="footer-links">
+      <a href="https://github.com/wraft/wraft" target="_blank" rel="noopener noreferrer">Wraft</a>
+      <a href="https://github.com/{{ section.extra.github }}" target="_blank" rel="noopener noreferrer">GitHub</a>
+      <a href="https://linkedin.com/in/{{ section.extra.linkedin }}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    </div>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

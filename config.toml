@@ -1,0 +1,7 @@
+title = "Vasil Abdul Razak | Backend Engineer"
+base_url = "/"
+compile_sass = false
+build_search_index = false
+
+[extra]
+author = "Vasil Abdul Razak"
