@@ -29,12 +29,12 @@ about_background_p2 = "At Wraft, he led the backend effort from early-stage MVP 
 quote = "Current focus: a book-parsing and translation engine that takes any book and shapes it into a reading experience tailored to the reader — clean typography, structure-aware navigation, and translation into the language they actually read in. LLMs are finally good enough to make this real."
 
 experiences = [
-  { date = "Dec 2024 – Present", company = "Independent Consultant", role = "Freelance Backend Engineer", desc = "Delivering backend engineering solutions for ERP-focused systems and business automation platforms, optimizing workflows for performance and data consistency.", bullets = [
+  { date = "Dec 2025 – Present", company = "Independent Consultant", role = "Freelance Backend Engineer", desc = "Delivering backend engineering solutions for ERP-focused systems and business automation platforms, optimizing workflows for performance and data consistency.", bullets = [
     "Developing and extending ERPNext/Frappe modules to support complex accounting workflows, reporting systems, and operational automation.",
     "Building scalable backend services and API integrations using Node.js to connect ERP systems with third-party platforms.",
     "Providing technical consultation on database schema design, queries, and performance optimization for business-critical applications."
   ] },
-  { date = "Jan 2022 – Nov 2024", company = "Functionary Lab", role = "Founding Engineer / Backend Engineer", location = "Bangalore, India", desc = "Served as the core contributor and backend owner of Wraft, driving the software architecture from inception to enterprise deployment.", bullets = [
+  { date = "Jan 2022 – Nov 2025", company = "Functionary Lab", role = "Founding Engineer / Backend Engineer", location = "Bangalore, India", desc = "Served as the core contributor and backend owner of Wraft, driving the software architecture from inception to enterprise deployment.", bullets = [
     "Designed foundational backend using Elixir/Phoenix, including role-based access control (RBAC), multi-tenant authorization, and secure data isolation.",
     "Built real-time collaborative editing engine and form builder backend using Phoenix Channels and WebSockets for conflict-free live synchronization.",
     "Architected and shipped a scalable multi-organization onboarding structure supporting 270+ active communities.",
