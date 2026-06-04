@@ -216,9 +216,14 @@
                 <li>{{ bullet }}</li>
               {% endfor %}
             </ul>
-            {% if proj.github %}
+            {% if proj.github or proj.design_link %}
               <div class="link-row">
-                <a class="inline-link" href="{{ proj.github }}" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+                {% if proj.github %}
+                  <a class="inline-link" href="{{ proj.github }}" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+                {% endif %}
+                {% if proj.design_link %}
+                  <a class="inline-link" href="{{ proj.design_link }}" target="_blank" rel="noopener noreferrer">Design Reference</a>
+                {% endif %}
               </div>
             {% endif %}
           </article>

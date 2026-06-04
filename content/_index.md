@@ -26,7 +26,7 @@ about_background_title = "Scalable architecture from day one."
 about_background_p1 = "Vasil's experience extends from co-founding content-sharing platforms to architecting multi-tenant document workflows. He builds systems that carry enterprise data, handle concurrent inputs under high load, and remain reliable in mission-critical pipelines."
 about_background_p2 = "At Wraft, he led the backend effort from early-stage MVP to a production-ready system capable of hosting 270+ active communities. This operational rigor extends into his freelance consulting work, delivering high-performance accounting and automation modules."
 
-quote = "Current focus: a book-parsing and translation engine for Urdu, Persian, Sanskrit, and Arabic primary sources — the histories and theology most of us can't read in the original. LLMs are finally good enough to bring these texts to readers who never could."
+quote = "Current focus: a book-parsing and translation engine that takes any book and shapes it into a reading experience tailored to the reader — clean typography, structure-aware navigation, and translation into the language they actually read in. LLMs are finally good enough to make this real."
 
 experiences = [
   { date = "Dec 2024 – Present", company = "Independent Consultant", role = "Freelance Backend Engineer", desc = "Delivering backend engineering solutions for ERP-focused systems and business automation platforms, optimizing workflows for performance and data consistency.", bullets = [
@@ -71,7 +71,12 @@ side_projects = [
     "Reader supports continuous-scroll and CSS-column paged modes, 13 themes (Solarized, Gruvbox, Dracula, Tokyo Night…), and full font/size/family controls.",
     "On-device ML Kit translation with RTL rendering, per-chapter translation cache, and an original ↔ translated toggle.",
     "Selection action bar with Copy and a conditional “Ask ChatGPT” action that appears only when the ChatGPT app is installed."
-  ] }
+  ] },
+  { title = "Book Parsing & Translation Engine", category = "In Progress · Reading Experience", desc = "A pipeline that ingests a book in any format, parses its structure, and renders it as a tailored reading experience — clean typography, structure-aware navigation, and LLM translation into the reader's language. UI direction inspired by a Google Stitch prototype; the EPUB Reader above is the first shipped slice.", stack = ["LLM Translation", "EPUB", "Flutter", "On-device ML"], bullets = [
+    "Structure-aware parsing of chapters, footnotes, and headings into a clean reading model independent of the source format.",
+    "Reader-first presentation: typography, spacing, themes, and navigation tuned for long-form reading rather than raw file rendering.",
+    "Per-book translation pipeline mixing on-device models and LLMs, with original ↔ translated toggling at any granularity."
+  ], design_link = "https://stitch.withgoogle.com/projects/1888920995036630329" }
 ]
 
 recognition = [
