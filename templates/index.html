@@ -57,7 +57,7 @@
         </div>
         <div class="hero-side">
           <figure class="hero-avatar">
-            <img src="imgs/avatar.png" alt="Portrait of Vasil Abdul Razak" />
+            <img src="imgs/profilepic.jpeg" alt="Portrait of Vasil Abdul Razak" />
           </figure>
           <aside class="hero-panel" aria-label="Current roles">
             <h2>Current roles</h2>
@@ -171,14 +171,26 @@
               <div class="meta">{{ proj.category }}</div>
             </div>
             <p>{{ proj.desc }}</p>
+            {% if proj.stack %}
+              <div class="stack-tags">
+                {% for tag in proj.stack %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
             <ul class="project-list">
               {% for bullet in proj.bullets %}
                 <li>{{ bullet }}</li>
               {% endfor %}
             </ul>
-            {% if proj.github %}
+            {% if proj.github or proj.design_link %}
               <div class="link-row">
-                <a class="inline-link" href="{{ proj.github }}" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+                {% if proj.github %}
+                  <a class="inline-link" href="{{ proj.github }}" target="_blank" rel="noopener noreferrer">GitHub Repo</a>
+                {% endif %}
+                {% if proj.design_link %}
+                  <a class="inline-link" href="{{ proj.design_link }}" target="_blank" rel="noopener noreferrer">Design Reference</a>
+                {% endif %}
               </div>
             {% endif %}
           </article>

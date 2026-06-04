@@ -26,7 +26,7 @@ about_background_title = "Scalable architecture from day one."
 about_background_p1 = "Vasil's experience extends from co-founding content-sharing platforms to architecting multi-tenant document workflows. He builds systems that carry enterprise data, handle concurrent inputs under high load, and remain reliable in mission-critical pipelines."
 about_background_p2 = "At Wraft, he led the backend effort from early-stage MVP to a production-ready system capable of hosting 270+ active communities. This operational rigor extends into his freelance consulting work, delivering high-performance accounting and automation modules."
 
-quote = "Current focus: Collaborative rich-text syncing, high-throughput background job processing, role-based access control, and cryptographic PDF workflows."
+quote = "Current focus: a book-parsing and translation engine that takes any book and shapes it into a reading experience tailored to the reader — clean typography, structure-aware navigation, and translation into the language they actually read in. LLMs are finally good enough to make this real."
 
 experiences = [
   { date = "Dec 2024 – Present", company = "Independent Consultant", role = "Freelance Backend Engineer", desc = "Delivering backend engineering solutions for ERP-focused systems and business automation platforms, optimizing workflows for performance and data consistency.", bullets = [
@@ -53,11 +53,27 @@ projects = [
     "Extensible workflow engine built on top of Oban pipelines with granular state management.",
     "Cryptographic document signing and PDF processing utilizing high-performance Elixir NIFs and Rust."
   ], github = "https://github.com/wraft/wraft" },
-  { title = "ERPNext/Frappe Integrations", category = "Enterprise Automation", desc = "Tailored backend modules and integrations extending ERPNext to connect complex operational workflows with third-party payment and reporting systems.", bullets = [
-    "Implemented robust API layers using Node.js and Python (Frappe).",
-    "Designed complex accounting reporting systems and automated ledger postings.",
-    "Optimized Postgres query performance for high-volume transactions."
-  ] }
+  { title = "Accounting Collaboration Platform", category = "Multi-tenant ERPNext Integration", desc = "A platform that lets accounting firms collaborate with their clients on top of ERPNext—unifying task management, document exchange, and real-time notifications across multiple client instances behind a single interface.", bullets = [
+    "Multi-tenant model where a single user can work across many client/company ERPNext instances through scoped access grants.",
+    "Proxies live accounting data (invoices, journal entries, ledgers) from each client's ERPNext while owning task and comment workflows internally.",
+    "Task-based workflow with comments, status transitions, audit trails, and cross-platform push notifications."
+  ] },
+  { title = "LocalTube Audio", category = "Android · Rust + Dioxus", desc = "A local-first Android app that turns any YouTube URL into a 320 kbps MP3 with embedded album art. No backend, no ads, no tracking—everything runs on device.", stack = ["Rust", "Dioxus", "JNI", "NewPipe Extractor", "FFmpegKit", "Kotlin", "Gradle 9", "Material You"], bullets = [
+    "Rust UI compiled with Dioxus and cross-compiled to aarch64-linux-android, packaged into a single APK.",
+    "Calls into NewPipe Extractor (Java) and FFmpegKit (native) over JNI via the `jni` crate, with Kotlin injection bridging the Android lifecycle.",
+    "Persistent download queue with animated progress and a dark Material You UI."
+  ] },
+  { title = "EPUB Reader", category = "Android · Flutter", desc = "A production-grade EPUB 2/3 reader with a full library, dual reading modes, and fully offline translation across 57 languages including Persian, Urdu, Arabic, and Hindi.", stack = ["Flutter", "Dart", "Google ML Kit", "CSS Columns", "SQLite"], bullets = [
+    "Library with auto-scan, grid/list views, cover thumbnails, sorting, and per-chapter persistent reading position.",
+    "Reader supports continuous-scroll and CSS-column paged modes, 13 themes (Solarized, Gruvbox, Dracula, Tokyo Night…), and full font/size/family controls.",
+    "On-device ML Kit translation with RTL rendering, per-chapter translation cache, and an original ↔ translated toggle.",
+    "Selection action bar with Copy and a conditional “Ask ChatGPT” action that appears only when the ChatGPT app is installed."
+  ] },
+  { title = "Book Parsing & Translation Engine", category = "In Progress · Reading Experience", desc = "A pipeline that ingests a book in any format, parses its structure, and renders it as a tailored reading experience — clean typography, structure-aware navigation, and LLM translation into the reader's language. UI direction inspired by a Google Stitch prototype; the EPUB Reader above is the first shipped slice.", stack = ["LLM Translation", "EPUB", "Flutter", "On-device ML"], bullets = [
+    "Structure-aware parsing of chapters, footnotes, and headings into a clean reading model independent of the source format.",
+    "Reader-first presentation: typography, spacing, themes, and navigation tuned for long-form reading rather than raw file rendering.",
+    "Per-book translation pipeline mixing on-device models and LLMs, with original ↔ translated toggling at any granularity."
+  ], design_link = "https://stitch.withgoogle.com/projects/1888920995036630329" }
 ]
 
 recognition = [
