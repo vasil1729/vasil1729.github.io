@@ -58,4 +58,22 @@ document.addEventListener("DOMContentLoaded", () => {
       el.classList.add("visible");
     });
   }
+
+  // Fetch Wraft Github Stars dynamically
+  const wraftStarsElement = document.querySelector('[data-metric-id="wraft-stars"] strong');
+  if (wraftStarsElement) {
+    fetch("https://api.github.com/repos/wraft/wraft")
+      .then(response => {
+        if (!response.ok) throw new Error("API error");
+        return response.json();
+      })
+      .then(data => {
+        if (data.stargazers_count !== undefined) {
+          wraftStarsElement.textContent = `${data.stargazers_count}+ Stars`;
+        }
+      })
+      .catch(err => {
+        console.warn("Failed to fetch dynamic GitHub stars for Wraft:", err);
+      });
+  }
 });

@@ -15,7 +15,7 @@ hero_description = "Vasil Abdul Razak is a Backend Engineer with 5+ years of exp
 
 metrics = [
   { val = "5+ Years", label = "building production-ready, scalable platforms" },
-  { val = "120+ Stars", label = "earned on Wraft open-source repository" },
+  { val = "120+ Stars", id = "wraft-stars", label = "earned on Wraft open-source repository" },
   { val = "50K+ Lines", label = "of robust production backend code authored" },
   { val = "270+ Commits", label = "driving Wraft from MVP to enterprise scale" }
 ]

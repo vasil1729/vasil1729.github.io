@@ -80,7 +80,7 @@
       </div>
       <div class="metrics" aria-label="Key metrics">
         {% for metric in section.extra.metrics %}
-          <article class="metric"><strong>{{ metric.val }}</strong><span>{{ metric.label }}</span></article>
+          <article class="metric" {% if metric.id %}data-metric-id="{{ metric.id }}"{% endif %}><strong>{{ metric.val }}</strong><span>{{ metric.label }}</span></article>
         {% endfor %}
       </div>
     </section>
