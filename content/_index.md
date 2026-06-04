@@ -53,7 +53,7 @@ projects = [
     "Extensible workflow engine built on top of Oban pipelines with granular state management.",
     "Cryptographic document signing and PDF processing utilizing high-performance Elixir NIFs and Rust."
   ], github = "https://github.com/wraft/wraft" },
-  { title = "Accounting Collaboration Platform", category = "Multi-tenant ERPNext Integration", desc = "A platform that lets accounting firms collaborate with their clients on top of ERPNext—unifying task management, document exchange, and real-time notifications across multiple client instances behind a single interface.", bullets = [
+  { title = "Accounting Collaboration Platform", category = "Multi-tenant ERPNext Integration", desc = "A platform that lets accounting firms collaborate with their clients on top of ERPNext—unifying task management, document exchange, and real-time notifications across multiple client instances behind a single interface.", stack = ["Node.js", "TypeScript", "Express", "PostgreSQL", "Prisma", "Redis", "Firebase FCM", "AWS S3", "Vitest"], bullets = [
     "Multi-tenant model where a single user can work across many client/company ERPNext instances through scoped access grants.",
     "Proxies live accounting data (invoices, journal entries, ledgers) from each client's ERPNext while owning task and comment workflows internally.",
     "Task-based workflow with comments, status transitions, audit trails, and cross-platform push notifications."
