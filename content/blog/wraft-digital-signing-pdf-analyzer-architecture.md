@@ -268,7 +268,7 @@ A counterparty can have multiple `ESignature` entries (one per signature field o
 ---
 
 <details>
-<summary>Layer 4: The Signing Pipeline (`WraftDoc.Documents.Signatures`)</summary>
+<summary>Layer 4: The Signing Pipeline</summary>
 
 [`lib/wraft_doc/documents/signatures.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/signatures.ex) — the central orchestrator.
 
