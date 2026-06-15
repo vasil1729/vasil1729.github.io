@@ -127,14 +127,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       e.preventDefault();
 
-      var svgClone = svg.cloneNode(true);
-      svgClone.removeAttribute("style");
-      svgClone.removeAttribute("height");
-      svgClone.removeAttribute("width");
+      var svgHTML = svg.outerHTML;
+      var wrapper = document.createElement("div");
+      wrapper.innerHTML = svgHTML;
+      var svgClone = wrapper.firstChild;
+
+      var vb = svgClone.getAttribute("viewBox");
+      if (vb) {
+        svgClone.removeAttribute("width");
+        svgClone.removeAttribute("height");
+        svgClone.setAttribute("width", "100%");
+        svgClone.setAttribute("height", "100%");
+      }
       svgClone.style.maxWidth = "94vw";
       svgClone.style.maxHeight = "90vh";
-      svgClone.style.width = "auto";
-      svgClone.style.height = "auto";
 
       var overlayDiv = document.createElement("div");
       overlayDiv.className = "mermaid-overlay";

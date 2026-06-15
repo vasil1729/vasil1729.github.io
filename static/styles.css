@@ -910,7 +910,7 @@ h2 {
 }
 
 .mermaid-overlay-inner {
-  max-width: 96vw;
+  width: 96vw;
   max-height: 94vh;
   overflow: auto;
   padding: 32px;
@@ -918,13 +918,16 @@ h2 {
   background: #fbf5eb;
   border: 1px solid var(--line);
   box-shadow: 0 24px 64px rgba(31, 26, 23, 0.3);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .mermaid-overlay-inner svg {
-  width: auto;
-  height: auto;
   max-width: 94vw;
   max-height: 90vh;
+  width: auto;
+  height: auto;
 }
 
 .mermaid-overlay .mermaid-close-hint {
