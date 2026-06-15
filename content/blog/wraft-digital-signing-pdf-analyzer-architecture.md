@@ -342,8 +342,6 @@ A `Stage` links a `ContentType`, `DataTemplate`, `Pipeline`, and `State` togethe
 
 ### Approval System
 
-> **Correction:** the legacy `WraftDoc.Documents.InstanceApprovalSystem` schema is deprecated. Approvals are now modeled as state-machine transitions.
-
 [`lib/wraft_doc/documents/approval.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/approval.ex)
 
 A document `Instance` lives at a `Flow.State` inside a `Flow` defined in [`lib/wraft_doc/organisation/flow.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/organisation/flow.ex). Each approval action is recorded as a row in `WraftDoc.Documents.InstanceTransitionLog` ([`lib/wraft_doc/documents/instance_transition_log.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/instance_transition_log.ex)) with `from_state_id`, `to_state_id`, `reviewer_id`, `review_status` (`:approved` or `:rejected`), and `reviewed_at`. `WraftDoc.Documents.Approval.get_document_approval_history/1` reads those transition rows in reverse chronological order, preloading the destination `Flow.State` and the reviewer's profile.
@@ -480,7 +478,7 @@ Typst doesn't natively output AcroForm fields. The convention of using specific 
 | CounterParty (signer) schema | [`lib/wraft_doc/counter_parties/counter_party.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/counter_parties/counter_party.ex) |
 | Document instance schema | [`lib/wraft_doc/documents/instance.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/instance.ex) |
 | Approval context | [`lib/wraft_doc/documents/approval.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/approval.ex) |
-| Approval transition log (deprecated: `instance_approval_sytem.ex`) | [`lib/wraft_doc/documents/instance_transition_log.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/instance_transition_log.ex) |
+| Approval transition log | [`lib/wraft_doc/documents/instance_transition_log.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/instance_transition_log.ex) |
 | Pipeline stage model | [`lib/wraft_doc/pipelines/stages/stage.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/pipelines/stages/stage.ex) |
 | Oban workers | [`lib/wraft_doc/workers/`](https://github.com/wraft/wraft/tree/main/lib/wraft_doc/workers/) |
 | PDF metadata extraction | [`lib/wraft_doc/pdf_metadata.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/pdf_metadata.ex) |
