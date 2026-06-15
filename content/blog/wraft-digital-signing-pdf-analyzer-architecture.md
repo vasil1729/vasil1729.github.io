@@ -19,29 +19,41 @@ Wraft is an open-source document lifecycle management platform ([github.com/wraf
 
 ## High-Level Architecture
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│                        Elixir / Phoenix                      │
-│                                                              │
-│  ┌──────────┐   ┌───────────┐   ┌──────────────┐            │
-│  │ Documents │──▶│ Signatures│──▶│  CounterParty │            │
-│  │ Instance  │   │ Context   │   │   (signers)   │            │
-│  └────┬─────┘   └─────┬─────┘   └──────────────┘            │
-│       │               │                                      │
-│       ▼               ▼                                      │
-│  ┌──────────┐   ┌───────────┐   ┌──────────────┐            │
-│  │  Engine   │   │ PdfAnalyzer│   │   Oban Worker │            │
-│  │ (Typst/   │   │ (Rust NIF) │   │  (EmailWorker)│            │
-│  │  LaTeX)   │   └───────────┘   └──────────────┘            │
-│  └──────────┘         │                                      │
-│                       ▼                                      │
-│               ┌───────────────┐    ┌─────────────────┐       │
-│               │  Java JAR     │    │  MinIO Storage   │       │
-│               │ DigitalSigner │    │  (PDF files)     │       │
-│               │ VisualSigner  │    └─────────────────┘       │
-│               └───────────────┘                               │
-└──────────────────────────────────────────────────────────────┘
-```
+{% mermaid() %}
+flowchart TD
+    subgraph Elixir["Elixir / Phoenix"]
+        DI["Documents Instance"]
+        SC["Signatures Context"]
+        CP["CounterParty (signers)"]
+        EN["Engine (Typst / LaTeX)"]
+        PA["PdfAnalyzer (Rust NIF)"]
+        OW["Oban Workers"]
+    end
+
+    subgraph Java["Java JARs"]
+        VS["VisualSignerApp"]
+        DS["DigitalSignerApp"]
+    end
+
+    subgraph Storage["MinIO Storage"]
+        PDF["PDF files"]
+    end
+
+    DI --> SC
+    SC --> CP
+    DI --> EN
+    SC --> PA
+    SC --> Java
+    Java --> Storage
+    PA --> SC
+    EN --> DI
+    SC --> OW
+    OW -->|"emails, notifications"| CP
+
+    style Elixir fill:#f4ede3,stroke:#6b5b4f,color:#1f1a17
+    style Java fill:#e8dcc8,stroke:#6b5b4f,color:#1f1a17
+    style Storage fill:#efe4d4,stroke:#6b5b4f,color:#1f1a17
+{% end %}
 
 The flow is:
 
@@ -116,6 +128,42 @@ def analyze_pdf(path, engine) do
 end
 ```
 
+### NIF Internals: How the PDF Gets Parsed
+
+{% mermaid() %}
+flowchart TD
+    PDF["PDF Document"] --> Load["lopdf::Document::load"]
+    Load --> Pages["Iterate pages"]
+    Pages --> StreamCheck{"Contents entry?"}
+    StreamCheck -->|"Reference"| RefResolve["Resolve indirect ref"]
+    StreamCheck -->|"Array"| IterArr["Iterate stream refs"]
+    StreamCheck -->|"Fallback"| PageContent["get_page_content"]
+    RefResolve --> Decompress
+    IterArr --> Decompress["Decompress stream"]
+    PageContent --> Decode["Content::decode"]
+    Decompress --> Decode
+    Decode --> Ops["Walk operations"]
+    Ops --> GraphicsState
+
+    subgraph GraphicsState["Graphics State Machine"]
+        PushPop["q / Q push & pop state stack"]
+        Cm["cm compose transformation matrix"]
+        ColorOps["rg/RG/g/G/scn/SCN set fill & stroke colors"]
+        RectOp["re record rectangle + transform coords"]
+        TfOp["Tf track current font"]
+    end
+
+    GraphicsState --> Match{"Color matches target?"}
+    Match -->|"Yes"| Record["Record RectangleData"]
+    Match -->|"No"| Skip["Skip"]
+    Record --> Result["DocumentAnalysisResult"]
+    Skip --> Ops
+
+    style PDF fill:#f4ede3,stroke:#6b5b4f,color:#1f1a17
+    style GraphicsState fill:#e8dcc8,stroke:#6b5b4f,color:#1f1a17
+    style Result fill:#efe4d4,stroke:#6b5b4f,color:#1f1a17
+{% end %}
+
 #### `typst.rs` — Content Stream Geometry
 
 Typst renders signature placeholders as colored rectangles with specific fill (`RGB(214, 255, 244)`) and stroke (`RGB(0, 184, 148)`) colors. The Typst analyzer:
@@ -147,6 +195,42 @@ This dual-engine approach means the same `PdfAnalyzer.analyze_pdf/2` API works w
 ---
 
 ## Layer 3: Signature Data Model
+
+{% mermaid() %}
+erDiagram
+    INSTANCE ||--o{ E_SIGNATURE : "has"
+    INSTANCE ||--o{ COUNTER_PARTY : "has"
+    COUNTER_PARTY ||--o{ E_SIGNATURE : "assigned to"
+    E_SIGNATURE {
+        uuid content_id FK
+        uuid user_id FK
+        uuid counter_party_id FK
+        enum signature_type
+        map signature_data
+        map signature_position
+        string signed_file
+        string verification_token
+        boolean is_valid
+    }
+    COUNTER_PARTY {
+        string name
+        string email
+        enum signature_status
+        datetime signature_date
+        string signature_ip
+        string device
+        string signed_file
+        map color_rgb
+    }
+    INSTANCE {
+        string instance_id
+        string raw
+        map serialized
+        boolean signature_status
+        boolean approval_status
+        integer type
+    }
+{% end %}
 
 ### `ESignature` Schema
 
@@ -291,45 +375,30 @@ The `get_or_download_pdf/3` helper in `Signatures` checks MinIO first — if a s
 
 ## The Complete Signing Flow — End to End
 
-```
-1. User clicks "Generate Signature" on a document instance
-   │
-   ▼
-2. Wraft builds the PDF (Typst or LaTeX engine)
-   │
-   ▼
-3. Rust NIF analyzes the PDF → finds signature placeholder rectangles
-   │  (Typst: colored rectangles; LaTeX: /Sig annotations)
-   │
-   ▼
-4. ESignature entries created with page + coordinate data
-   │
-   ▼
-5. User assigns CounterParties (signers) to signature slots
-   │  → Email with verification token sent to each signer
-   │
-   ▼
-6. Signer opens signing link → uploads handwritten signature image
-   │
-   ▼
-7. Java VisualSignerApp stamps image at coordinates on PDF
-   │  → PDF uploaded to MinIO
-   │  → Document owner notified
-   │
-   ▼
-8. Repeat 6-7 for each signer (PDF layers accumulate in MinIO)
-   │
-   ▼
-9. Last signer triggers digital signature:
-   │  → Certificate page generated (Pandoc + wkhtmltopdf)
-   │  → Java DigitalSignerApp applies PKCS#7 signature
-   │  → instance.signature_status = true
-   │  → All parties notified: "Document fully signed"
-   │
-   ▼
-10. Final cryptographically-signed PDF stored in MinIO
-    → Complete audit trail: IP, device, timestamp per signer
-```
+{% mermaid() %}
+flowchart TD
+    A["1. User clicks 'Generate Signature'"] --> B["2. Wraft builds PDF<br/>(Typst or LaTeX engine)"]
+    B --> C["3. Rust NIF analyzes PDF<br/>Finds signature placeholders"]
+    C --> D["4. ESignature entries created<br/>with page + coordinate data"]
+    D --> E["5. User assigns CounterParties<br/>(signers) to signature slots"]
+    E --> F["Email with verification<br/>token sent to each signer"]
+    F --> G["6. Signer opens link<br/>Uploads handwritten signature image"]
+    G --> H["7. Java VisualSignerApp<br/>stamps image at coordinates on PDF"]
+    H --> I{"Last signer?"}
+    I -->|"No"| J["PDF uploaded to MinIO<br/>Owner notified<br/>Next signer downloads"]
+    I -->|"Yes"| K["8. Generate certificate page<br/>(Pandoc + wkhtmltopdf)"]
+    K --> L["9. Java DigitalSignerApp<br/>applies PKCS#7 signature"]
+    L --> M["instance.signature_status = true<br/>All parties notified"]
+    M --> N["10. Final signed PDF<br/>stored in MinIO<br/>Complete audit trail"]
+
+    J --> F
+
+    style A fill:#f4ede3,stroke:#6b5b4f,color:#1f1a17
+    style C fill:#e8dcc8,stroke:#6b5b4f,color:#1f1a17
+    style H fill:#d6cfbf,stroke:#6b5b4f,color:#1f1a17
+    style L fill:#d6cfbf,stroke:#6b5b4f,color:#1f1a17
+    style N fill:#efe4d4,stroke:#6b5b4f,color:#1f1a17
+{% end %}
 
 ---
 
@@ -342,6 +411,29 @@ The `get_or_download_pdf/3` helper in `Signatures` checks MinIO first — if a s
 | Business logic, web layer, orchestration | Elixir | Phoenix, Oban, Ecto, real-time channels |
 | CPU-intensive PDF parsing | Rust | Performance + memory safety as a NIF |
 | PKCS#7 signing + visual stamping | Java | PDFBox/BouncyCastle — no Elixir equivalent |
+
+{% mermaid() %}
+flowchart LR
+    subgraph Polyglot["Language Boundaries"]
+        direction LR
+        EX["Elixir<br/>Orchestration<br/>Oban, Phoenix, Ecto"]
+        RU["Rust<br/>CPU Parsing<br/>lopdf NIF, in-process"]
+        JA["Java<br/>Crypto Signing<br/>PDFBox, BouncyCastle"]
+        MI["MinIO<br/>Shared File Store"]
+    end
+
+    EX -->|"NIF call<br/>sub-microsecond"| RU
+    EX -->|"System.cmd<br/>subprocess"| JA
+    RU -->|"JSON result"| EX
+    JA -->|"signed PDF"| MI
+    EX -->|"upload/download"| MI
+
+    style Polyglot fill:none,stroke:#6b5b4f,color:#1f1a17
+    style EX fill:#f4ede3,stroke:#6b5b4f,color:#1f1a17
+    style RU fill:#e8dcc8,stroke:#6b5b4f,color:#1f1a17
+    style JA fill:#efe4d4,stroke:#6b5b4f,color:#1f1a17
+    style MI fill:#d6cfbf,stroke:#6b5b4f,color:#1f1a17
+{% end %}
 
 Each language is used where it's strongest. The interop cost is minimal: Rust runs in-process via NIF (sub-microsecond call overhead), Java runs as a subprocess (acceptable for I/O-bound signing operations that take hundreds of milliseconds anyway).
 

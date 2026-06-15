@@ -1,4 +1,26 @@
 document.addEventListener("DOMContentLoaded", () => {
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "base",
+      themeVariables: {
+        primaryColor: "#f4ede3",
+        primaryTextColor: "#1f1a17",
+        primaryBorderColor: "#6b5b4f",
+        lineColor: "#6b5b4f",
+        secondaryColor: "#e8dcc8",
+        tertiaryColor: "#efe4d4",
+        mainBkg: "#f4ede3",
+        nodeBorder: "#6b5b4f",
+        clusterBkg: "rgba(255,251,244,0.72)",
+        clusterBorder: "rgba(69,52,39,0.18)",
+        titleColor: "#1f1a17",
+        edgeLabelBackground: "#f4ede3",
+        nodeTextColor: "#1f1a17",
+        fontSize: "14px"
+      }
+    });
+  }
   // Mobile Navigation Toggle
   const navToggle = document.querySelector(".nav-toggle");
   const nav = document.querySelector("#primary-nav");
