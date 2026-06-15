@@ -104,14 +104,22 @@ I added this to `~/.bashrc`.
 
 ### Step 3: Safety Net
 
-Even with the alias, there are edge cases — running opencode through other tools, force-killed shells, etc. So I added a cleanup to `~/.bash_logout`, which runs automatically when a login shell exits:
+Even with the alias, there are edge cases — running opencode through other tools, force-killed shells, etc. So I added a cleanup to `~/.bash_logout`, which runs automatically when a login shell exits. The full file looks like this:
 
 ```bash
-# ~/.bash_logout
+# ~/.bash_logout: executed by bash(1) when login shell exits.
+
+# when leaving the console clear the screen to increase privacy
+if [ "$SHLVL" = 1 ]; then
+    [ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
+fi
+
+# Kill orphaned processes on logout
 pkill -u "$(id -u)" -x opencode 2>/dev/null
+pkill -u "$(id -u)" -x zed-editor 2>/dev/null
 ```
 
-This says: "before you close the door, check if any opencode processes are still running under my user ID. If so, kill them."
+The original file just cleared the screen. The two `pkill` lines I added say: "before you close the door, check if any opencode or zed-editor processes are still running under my user ID. If so, kill them."
 
 ### Step 4: Bonus Safeguards
 
