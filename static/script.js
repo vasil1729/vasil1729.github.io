@@ -98,4 +98,42 @@ document.addEventListener("DOMContentLoaded", () => {
         console.warn("Failed to fetch dynamic GitHub stars for Wraft:", err);
       });
   }
+
+  // Mermaid diagram click-to-expand lightbox
+  document.addEventListener("click", (e) => {
+    const mermaidEl = e.target.closest(".mermaid");
+    const overlay = document.querySelector(".mermaid-overlay");
+
+    if (mermaidEl && !overlay) {
+      e.preventDefault();
+      const svgClone = mermaidEl.querySelector("svg").cloneNode(true);
+      const overlayDiv = document.createElement("div");
+      overlayDiv.className = "mermaid-overlay is-open";
+      const innerDiv = document.createElement("div");
+      innerDiv.className = "mermaid-overlay-inner";
+      innerDiv.appendChild(svgClone);
+      overlayDiv.appendChild(innerDiv);
+      const hint = document.createElement("span");
+      hint.className = "mermaid-close-hint";
+      hint.textContent = "Click anywhere to close";
+      overlayDiv.appendChild(hint);
+      document.body.appendChild(overlayDiv);
+      return;
+    }
+
+    if (overlay && overlay.classList.contains("is-open")) {
+      overlay.classList.remove("is-open");
+      setTimeout(() => overlay.remove(), 260);
+    }
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      const overlay = document.querySelector(".mermaid-overlay.is-open");
+      if (overlay) {
+        overlay.classList.remove("is-open");
+        setTimeout(() => overlay.remove(), 260);
+      }
+    }
+  });
 });
