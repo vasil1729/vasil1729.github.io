@@ -379,10 +379,6 @@ organisations/{org_id}/contents/{instance_id}/
 
 The `get_or_download_pdf/3` helper in `Signatures` checks MinIO first — if a signed PDF already exists (from a previous counterparty's visual signature), it downloads that as the base for the next signature. This layering approach means each signer stamps on top of the previous signer's work.
 
-### PDF Metadata
-
-[`lib/wraft_doc/pdf_metadata.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/pdf_metadata.ex) extracts metadata via regex parsing of raw PDF content (Title, Author, Creator, Producer, CreationDate, ModDate) — a lightweight approach that avoids loading the full document.
-
 </details>
 
 ---
@@ -481,7 +477,6 @@ Typst doesn't natively output AcroForm fields. The convention of using specific 
 | Approval transition log | [`lib/wraft_doc/documents/instance_transition_log.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/instance_transition_log.ex) |
 | Pipeline stage model | [`lib/wraft_doc/pipelines/stages/stage.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/pipelines/stages/stage.ex) |
 | Oban workers | [`lib/wraft_doc/workers/`](https://github.com/wraft/wraft/tree/main/lib/wraft_doc/workers/) |
-| PDF metadata extraction | [`lib/wraft_doc/pdf_metadata.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/pdf_metadata.ex) |
 
 ---
 
