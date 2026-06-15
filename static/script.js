@@ -6,6 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.documentElement.classList.add("dark");
   }
 
+  function isDark() {
+    return document.documentElement.classList.contains("dark");
+  }
+
   var lightMermaidVars = {
     primaryColor: "#f4ede3",
     primaryTextColor: "#1f1a17",
@@ -24,36 +28,115 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   var darkMermaidVars = {
-    primaryColor: "#28221e",
+    primaryColor: "#2d2824",
     primaryTextColor: "#f0e8dc",
-    primaryBorderColor: "#a08c78",
-    lineColor: "#a08c78",
+    primaryBorderColor: "#9a8876",
+    lineColor: "#9a8876",
     secondaryColor: "#1e1a16",
     tertiaryColor: "#1a1714",
-    mainBkg: "#28221e",
-    nodeBorder: "#a08c78",
-    clusterBkg: "rgba(40,34,30,0.72)",
-    clusterBorder: "rgba(160,140,120,0.18)",
+    mainBkg: "#2d2824",
+    nodeBorder: "#9a8876",
+    clusterBkg: "rgba(45,40,36,0.72)",
+    clusterBorder: "rgba(154,136,118,0.18)",
     titleColor: "#f0e8dc",
-    edgeLabelBackground: "#28221e",
+    edgeLabelBackground: "#2d2824",
     nodeTextColor: "#f0e8dc",
     fontSize: "14px"
   };
 
-  var currentIsDark = document.documentElement.classList.contains("dark");
+  function initMermaid() {
+    if (!window.mermaid) return;
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "base",
+      themeVariables: isDark() ? darkMermaidVars : lightMermaidVars
+    });
+
+    mermaid.run({
+      querySelector: ".mermaid",
+      suppressErrors: false
+    }).then(function() {
+      setupLightbox();
+    }).catch(function(err) {
+      console.warn("Mermaid render error:", err);
+      setupLightbox();
+    });
+  }
+
+  function setupLightbox() {
+    document.addEventListener("click", function(e) {
+      var overlay = document.querySelector(".mermaid-overlay");
+
+      if (overlay && overlay.classList.contains("is-open")) {
+        overlay.classList.remove("is-open");
+        setTimeout(function() { overlay.remove(); }, 260);
+        return;
+      }
+
+      var mermaidEl = e.target.closest(".mermaid");
+      if (!mermaidEl) return;
+      var svg = mermaidEl.querySelector("svg");
+      if (!svg) return;
+
+      e.preventDefault();
+
+      var svgHTML = svg.outerHTML;
+      var wrapper = document.createElement("div");
+      wrapper.innerHTML = svgHTML;
+      var svgClone = wrapper.firstChild;
+
+      var vb = svgClone.getAttribute("viewBox");
+      if (vb) {
+        svgClone.removeAttribute("width");
+        svgClone.removeAttribute("height");
+        svgClone.setAttribute("width", "100%");
+        svgClone.setAttribute("height", "100%");
+      }
+      svgClone.style.maxWidth = "94vw";
+      svgClone.style.maxHeight = "90vh";
+
+      var overlayDiv = document.createElement("div");
+      overlayDiv.className = "mermaid-overlay";
+      var innerDiv = document.createElement("div");
+      innerDiv.className = "mermaid-overlay-inner";
+      innerDiv.appendChild(svgClone);
+      overlayDiv.appendChild(innerDiv);
+      var hint = document.createElement("span");
+      hint.className = "mermaid-close-hint";
+      hint.textContent = "Click anywhere or press Esc to close";
+      overlayDiv.appendChild(hint);
+      document.body.appendChild(overlayDiv);
+
+      requestAnimationFrame(function() {
+        overlayDiv.classList.add("is-open");
+      });
+    });
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        var overlay = document.querySelector(".mermaid-overlay");
+        if (overlay) {
+          overlay.classList.remove("is-open");
+          setTimeout(function() { overlay.remove(); }, 260);
+        }
+      }
+    });
+  }
+
+  initMermaid();
 
   var themeBtn = document.querySelector(".theme-toggle");
   if (themeBtn) {
     themeBtn.addEventListener("click", function() {
-      var isDark = document.documentElement.classList.contains("dark");
-      document.documentElement.classList.remove(isDark ? "dark" : "light");
-      document.documentElement.classList.add(isDark ? "light" : "dark");
-      localStorage.setItem("theme", isDark ? "light" : "dark");
+      var dark = isDark();
+      document.documentElement.classList.remove(dark ? "dark" : "light");
+      document.documentElement.classList.add(dark ? "light" : "dark");
+      localStorage.setItem("theme", dark ? "light" : "dark");
       if (window.mermaid) {
         mermaid.initialize({
           startOnLoad: false,
           theme: "base",
-          themeVariables: isDark ? lightMermaidVars : darkMermaidVars
+          themeVariables: dark ? lightMermaidVars : darkMermaidVars
         });
         mermaid.run({ querySelector: ".mermaid", suppressErrors: true });
       }
@@ -134,91 +217,3 @@ document.addEventListener("DOMContentLoaded", () => {
       });
   }
 });
-
-// Mermaid initialization and expand-to-lightbox
-(function() {
-  function initMermaid() {
-    if (!window.mermaid) return;
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: "base",
-      themeVariables: currentIsDark ? darkMermaidVars : lightMermaidVars
-    });
-
-    mermaid.run({
-      querySelector: ".mermaid",
-      suppressErrors: false
-    }).then(function() {
-      setupLightbox();
-    }).catch(function(err) {
-      console.warn("Mermaid render error:", err);
-      setupLightbox();
-    });
-  }
-
-  function setupLightbox() {
-    document.addEventListener("click", function(e) {
-      var overlay = document.querySelector(".mermaid-overlay");
-
-      if (overlay && overlay.classList.contains("is-open")) {
-        overlay.classList.remove("is-open");
-        setTimeout(function() { overlay.remove(); }, 260);
-        return;
-      }
-
-      var mermaidEl = e.target.closest(".mermaid");
-      if (!mermaidEl) return;
-      var svg = mermaidEl.querySelector("svg");
-      if (!svg) return;
-
-      e.preventDefault();
-
-      var svgHTML = svg.outerHTML;
-      var wrapper = document.createElement("div");
-      wrapper.innerHTML = svgHTML;
-      var svgClone = wrapper.firstChild;
-
-      var vb = svgClone.getAttribute("viewBox");
-      if (vb) {
-        svgClone.removeAttribute("width");
-        svgClone.removeAttribute("height");
-        svgClone.setAttribute("width", "100%");
-        svgClone.setAttribute("height", "100%");
-      }
-      svgClone.style.maxWidth = "94vw";
-      svgClone.style.maxHeight = "90vh";
-
-      var overlayDiv = document.createElement("div");
-      overlayDiv.className = "mermaid-overlay";
-      var innerDiv = document.createElement("div");
-      innerDiv.className = "mermaid-overlay-inner";
-      innerDiv.appendChild(svgClone);
-      overlayDiv.appendChild(innerDiv);
-      var hint = document.createElement("span");
-      hint.className = "mermaid-close-hint";
-      hint.textContent = "Click anywhere or press Esc to close";
-      overlayDiv.appendChild(hint);
-      document.body.appendChild(overlayDiv);
-
-      requestAnimationFrame(function() {
-        overlayDiv.classList.add("is-open");
-      });
-    });
-
-    document.addEventListener("keydown", function(e) {
-      if (e.key === "Escape") {
-        var overlay = document.querySelector(".mermaid-overlay");
-        if (overlay) {
-          overlay.classList.remove("is-open");
-          setTimeout(function() { overlay.remove(); }, 260);
-        }
-      }
-    });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initMermaid);
-  } else {
-    initMermaid();
-  }
-})();
