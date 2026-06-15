@@ -11,19 +11,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   var lightMermaidVars = {
-    primaryColor: "#f4ede3",
-    primaryTextColor: "#1f1a17",
-    primaryBorderColor: "#6b5b4f",
-    lineColor: "#6b5b4f",
-    secondaryColor: "#e8dcc8",
-    tertiaryColor: "#efe4d4",
-    mainBkg: "#f4ede3",
-    nodeBorder: "#6b5b4f",
-    clusterBkg: "rgba(255,251,244,0.72)",
-    clusterBorder: "rgba(69,52,39,0.18)",
-    titleColor: "#1f1a17",
-    edgeLabelBackground: "#f4ede3",
-    nodeTextColor: "#1f1a17",
+    primaryColor: "#e8f0f7",
+    primaryTextColor: "#16202c",
+    primaryBorderColor: "#546575",
+    lineColor: "#546575",
+    secondaryColor: "#d9e5f0",
+    tertiaryColor: "#e2ebf4",
+    mainBkg: "#e8f0f7",
+    nodeBorder: "#546575",
+    clusterBkg: "rgba(255,255,255,0.60)",
+    clusterBorder: "rgba(46,80,144,0.20)",
+    titleColor: "#16202c",
+    edgeLabelBackground: "#e8f0f7",
+    nodeTextColor: "#16202c",
     fontSize: "14px"
   };
 
