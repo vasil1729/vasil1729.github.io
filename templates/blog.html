@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ section.title }} — Vasil Abdul Razak</title>
+  <meta name="description" content="{{ section.description }}" />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" type="image/png" href="/imgs/avatar.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="{{ section.title }}" />
+  <meta property="og:site_name" content="Vasil Abdul Razak" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell topbar">
+      <a class="brand" href="/" aria-label="Vasil Abdul Razak home">
+        <span class="brand-name">Vasil Abdul Razak</span>
+        <span class="brand-role">Backend Engineer</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open navigation">
+        <span class="nav-toggle-lines" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+      <nav id="primary-nav" class="nav" aria-label="Primary">
+        <a href="/#overview">Overview</a>
+        <a href="/#experience">Experience</a>
+        <a href="/#projects">Projects</a>
+        <a href="/#skills">Skills</a>
+        <a href="/blog">Blog</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+  <main class="shell">
+    <section class="blog-index">
+      <div class="section-head">
+        <div class="micro-label">Writing</div>
+        <h2>Blog.</h2>
+        <p>{{ section.description }}</p>
+      </div>
+      <div class="post-list" style="margin-top: 32px;">
+        {% for page in section.pages %}
+          <article class="post-card">
+            <time class="post-date" datetime="{{ page.date | date(format="%Y-%m-%d") }}">{{ page.date | date(format="%b %d, %Y") }}</time>
+            <h3><a href="{{ page.permalink }}">{{ page.title }}</a></h3>
+            <p>{{ page.description }}</p>
+            {% if page.taxonomies.tags %}
+              <div class="stack-tags">
+                {% for tag in page.taxonomies.tags %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+  <footer class="shell footer">
+    <div>Copyright &copy; 2026 Vasil Abdul Razak.</div>
+    <div class="footer-links">
+      <a href="/">Home</a>
+      <a href="/blog">Blog</a>
+    </div>
+  </footer>
+  <script src="/script.js"></script>
+</body>
+</html>

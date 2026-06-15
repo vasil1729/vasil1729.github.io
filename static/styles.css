@@ -608,3 +608,190 @@ h2 {
   .hero-list li { grid-template-columns: 1fr; gap: 6px; }
   .project-top, .card-header, .footer { flex-direction: column; }
 }
+
+/* Blog styles */
+.blog-post {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+
+.post-header {
+  margin-bottom: 40px;
+}
+
+.post-back {
+  display: inline-block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.post-back:hover {
+  color: var(--accent);
+}
+
+.post-header h1 {
+  max-width: 100%;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.05;
+  margin-bottom: 16px;
+}
+
+.post-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.post-meta time {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.post-content {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: #342c28;
+}
+
+.post-content h2 {
+  font-size: 1.8rem;
+  margin: 40px 0 16px;
+  letter-spacing: -0.03em;
+}
+
+.post-content h3 {
+  font-size: 1.3rem;
+  margin: 32px 0 12px;
+}
+
+.post-content p {
+  margin: 16px 0;
+}
+
+.post-content pre {
+  background: #1f1a17;
+  color: #f4ede3;
+  padding: 20px 24px;
+  border-radius: 16px;
+  overflow-x: auto;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  margin: 20px 0;
+}
+
+.post-content code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.88em;
+  background: rgba(69, 52, 39, 0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.post-content pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.post-content hr {
+  border: none;
+  height: 1px;
+  background: var(--line);
+  margin: 40px 0;
+}
+
+.post-content ul, .post-content ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.post-content li {
+  margin-top: 8px;
+}
+
+.post-content li:first-child {
+  margin-top: 0;
+}
+
+.post-content strong {
+  font-weight: 600;
+}
+
+.post-content a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.post-content a:hover {
+  color: var(--accent-2);
+}
+
+/* Blog index */
+.blog-index {
+  padding: 40px 0;
+}
+
+.post-list {
+  display: grid;
+  gap: 20px;
+}
+
+.post-card {
+  padding: 28px 30px;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--panel);
+  box-shadow: 0 14px 34px rgba(67, 44, 24, 0.08);
+  display: grid;
+  gap: 10px;
+}
+
+.post-card .post-date {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.post-card h3 {
+  font-size: 1.4rem;
+  line-height: 1.15;
+}
+
+.post-card h3 a {
+  color: var(--text);
+}
+
+.post-card h3 a:hover {
+  color: var(--accent);
+}
+
+.post-card p {
+  color: #372f2a;
+  font-size: 0.96rem;
+}
+
+.post-card .stack-tags {
+  margin-top: 4px;
+}
+
+@media (max-width: 720px) {
+  .blog-post { padding: 24px 0; }
+  .post-header h1 { font-size: clamp(1.6rem, 6vw, 2.4rem); }
+  .post-content { font-size: 1rem; }
+  .post-content pre { padding: 16px 18px; font-size: 0.82rem; }
+  .post-card { padding: 22px; }
+}
