@@ -2,7 +2,7 @@
 title = "Inside Wraft: How We Built Digital Signing, PDF Analysis, and the Elixir-Rust-Java Bridge"
 description = "A deep architectural walkthrough of Wraft's digital signing pipeline — from Rust NIFs that parse PDF geometry, through Java signing JARs, to Elixir/Oban workflow orchestration — and how every piece connects."
 date = 2026-06-15
-updated = 2026-06-15
+updated = 2026-06-16
 tags = ["elixir", "rust", "pdf", "digital-signing", "nif", "architecture"]
 
 [extra]
@@ -67,7 +67,8 @@ The flow is:
 
 ---
 
-## Layer 1: Document Instance & State Machine
+<details>
+<summary>Layer 1: Document Instance & State Machine</summary>
 
 The core entity is `WraftDoc.Documents.Instance` ([`lib/wraft_doc/documents/instance.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/instance.ex)). Every document version is an Instance with:
 
@@ -80,9 +81,12 @@ The core entity is `WraftDoc.Documents.Instance` ([`lib/wraft_doc/documents/inst
 
 The Instance tracks which workflow state a document is in, who's allowed to edit it, and whether signing is complete. The `update_signature_status_changeset/2` function flips `signature_status` to `true` once the last counterparty signs.
 
+</details>
+
 ---
 
-## Layer 2: The Rust PDF Analyzer NIF
+<details>
+<summary>Layer 2: The Rust PDF Analyzer NIF</summary>
 
 This is the most technically interesting piece. Wraft needs to know *where* signature fields are placed in the generated PDF — not at the template level, but at the rendered pixel-coordinate level, because PDF coordinate systems differ between engines.
 
@@ -192,9 +196,12 @@ The LaTeX analyzer:
 
 This dual-engine approach means the same `PdfAnalyzer.analyze_pdf/2` API works whether the template was rendered by Typst (colored-rectangle convention) or LaTeX (AcroForm signature field convention).
 
+</details>
+
 ---
 
-## Layer 3: Signature Data Model
+<details>
+<summary>Layer 3: Signature Data Model</summary>
 
 {% mermaid() %}
 erDiagram
@@ -265,9 +272,12 @@ Each signer is a CounterParty with:
 
 A counterparty can have multiple `ESignature` entries (one per signature field on the document). The unique constraint `e_signature_content_id_counter_party_id_index` prevents duplicate signature assignments.
 
+</details>
+
 ---
 
-## Layer 4: The Signing Pipeline (`WraftDoc.Documents.Signatures`)
+<details>
+<summary>Layer 4: The Signing Pipeline (`WraftDoc.Documents.Signatures`)</summary>
 
 [`lib/wraft_doc/documents/signatures.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/documents/signatures.ex) — the central orchestrator.
 
@@ -315,9 +325,12 @@ Two JAR applications handle the actual PDF manipulation:
 
 Why Java? The Apache PDFBox and BouncyCastle libraries provide mature, well-tested implementations for PDF signature manipulation and PKCS#7 that have no equivalent in the Elixir ecosystem. The `System.cmd("java", ...)` call is a pragmatic bridge — the signing operation is I/O-bound (reading/writing the PDF), not latency-sensitive, so the subprocess overhead is negligible.
 
+</details>
+
 ---
 
-## Layer 5: Workflow & Approval Pipelines
+<details>
+<summary>Layer 5: Workflow & Approval Pipelines</summary>
 
 Signing doesn't happen in isolation. Documents go through approval workflows before they're ready for signing.
 
@@ -350,9 +363,12 @@ The workers directory ([`lib/wraft_doc/workers/`](https://github.com/wraft/wraft
 - **`CloudImportWorker`** — Imports documents from external cloud storage
 - **`WebhookWorker`** / **`AdminWebhookWorker`** — Dispatches webhook notifications on document events
 
+</details>
+
 ---
 
-## Layer 6: Storage & File Management
+<details>
+<summary>Layer 6: Storage & File Management</summary>
 
 ### MinIO
 
@@ -370,6 +386,8 @@ The `get_or_download_pdf/3` helper in `Signatures` checks MinIO first — if a s
 ### PDF Metadata
 
 [`lib/wraft_doc/pdf_metadata.ex`](https://github.com/wraft/wraft/blob/main/lib/wraft_doc/pdf_metadata.ex) extracts metadata via regex parsing of raw PDF content (Title, Author, Creator, Producer, CreationDate, ModDate) — a lightweight approach that avoids loading the full document.
+
+</details>
 
 ---
 
@@ -402,7 +420,8 @@ flowchart TD
 
 ---
 
-## Design Decisions & Tradeoffs
+<details>
+<summary>Design Decisions & Tradeoffs</summary>
 
 ### Why three languages?
 
@@ -444,6 +463,8 @@ PKCS#7 and PDF signature dictionaries have subtle compliance requirements (PAdES
 ### Why colored rectangles for Typst?
 
 Typst doesn't natively output AcroForm fields. The convention of using specific fill/stroke colors as "signature zone markers" is a practical workaround: the template author places a colored rectangle, and the Rust analyzer identifies it by color match. The `color_rgb` validation on CounterParty (200-255 range for R, G, B) ensures the assigned colors are light enough for the signature image to be legible.
+
+</details>
 
 ---
 

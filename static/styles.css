@@ -712,6 +712,64 @@ h2 {
   margin: 40px 0;
 }
 
+.post-content details {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 4px 20px;
+  margin: 32px 0;
+  background: rgba(244, 237, 227, 0.35);
+  transition: background 0.15s ease;
+}
+
+.post-content details[open] {
+  background: rgba(244, 237, 227, 0.55);
+}
+
+.post-content details > summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #342c28;
+  padding: 12px 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  user-select: none;
+}
+
+.post-content details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.post-content details > summary::before {
+  content: "▸";
+  display: inline-block;
+  font-size: 0.9em;
+  color: #6b5b4f;
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.post-content details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.post-content details > summary:hover {
+  color: #1f1a17;
+}
+
+.post-content details > *:not(summary) {
+  margin-left: 24px;
+}
+
+.post-content details > h3:first-of-type,
+.post-content details > p:first-of-type {
+  margin-top: 8px;
+}
+
 .post-content ul, .post-content ol {
   margin: 16px 0;
   padding-left: 24px;
