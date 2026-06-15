@@ -729,6 +729,47 @@ h2 {
   margin: 40px 0;
 }
 
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  margin: 20px 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.post-content th,
+.post-content td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.post-content th {
+  font-weight: 600;
+  background: rgba(46, 80, 144, 0.08);
+  color: var(--text);
+}
+
+.post-content tr:last-child td {
+  border-bottom: none;
+}
+
+.post-content tbody tr:nth-child(even) {
+  background: rgba(46, 80, 144, 0.03);
+}
+
+@media (max-width: 720px) {
+  .post-content table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 .post-content details {
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -887,6 +928,7 @@ h2 {
   cursor: zoom-in;
   position: relative;
   transition: box-shadow 200ms ease;
+  max-width: 100%;
 }
 
 .post-content .mermaid:hover {
@@ -895,7 +937,10 @@ h2 {
 
 .post-content .mermaid svg {
   max-width: 100%;
+  width: auto;
   height: auto;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .post-content .mermaid .node rect,
@@ -1096,6 +1141,15 @@ html.dark .post-content pre code {
   background: transparent;
   color: inherit;
   border: none;
+}
+
+html.dark .post-content th {
+  background: rgba(110, 196, 178, 0.10);
+  color: var(--text);
+}
+
+html.dark .post-content tbody tr:nth-child(even) {
+  background: rgba(110, 196, 178, 0.04);
 }
 
 html.dark .post-content details {

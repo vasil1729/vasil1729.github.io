@@ -50,9 +50,9 @@ flowchart TD
     SC --> OW
     OW -->|"emails, notifications"| CP
 
-    style Elixir fill:#f4ede3,stroke:#6b5b4f,color:#1f1a17
-    style Java fill:#e8dcc8,stroke:#6b5b4f,color:#1f1a17
-    style Storage fill:#efe4d4,stroke:#6b5b4f,color:#1f1a17
+    style Elixir fill:#e8f0f7,stroke:#546575,color:#16202c
+    style Java fill:#d9e5f0,stroke:#546575,color:#16202c
+    style Storage fill:#e2ebf4,stroke:#546575,color:#16202c
 {% end %}
 
 The flow is:
@@ -154,9 +154,9 @@ flowchart TD
     Record --> Result["DocumentAnalysisResult"]
     Skip --> Ops
 
-    style PDF fill:#f4ede3,stroke:#6b5b4f,color:#1f1a17
-    style GraphicsState fill:#e8dcc8,stroke:#6b5b4f,color:#1f1a17
-    style Result fill:#efe4d4,stroke:#6b5b4f,color:#1f1a17
+    style PDF fill:#e8f0f7,stroke:#546575,color:#16202c
+    style GraphicsState fill:#d9e5f0,stroke:#546575,color:#16202c
+    style Result fill:#e2ebf4,stroke:#546575,color:#16202c
 {% end %}
 
 #### `typst.rs` — Content Stream Geometry
@@ -394,11 +394,11 @@ flowchart TD
 
     J --> F
 
-    style A fill:#f4ede3,stroke:#6b5b4f,color:#1f1a17
-    style C fill:#e8dcc8,stroke:#6b5b4f,color:#1f1a17
-    style H fill:#d6cfbf,stroke:#6b5b4f,color:#1f1a17
-    style L fill:#d6cfbf,stroke:#6b5b4f,color:#1f1a17
-    style N fill:#efe4d4,stroke:#6b5b4f,color:#1f1a17
+    style A fill:#e8f0f7,stroke:#546575,color:#16202c
+    style C fill:#d9e5f0,stroke:#546575,color:#16202c
+    style H fill:#cddbe9,stroke:#546575,color:#16202c
+    style L fill:#cddbe9,stroke:#546575,color:#16202c
+    style N fill:#e2ebf4,stroke:#546575,color:#16202c
 {% end %}
 
 ---
@@ -430,11 +430,11 @@ flowchart LR
     JA -->|"signed PDF"| MI
     EX -->|"upload/download"| MI
 
-    style Polyglot fill:none,stroke:#6b5b4f,color:#1f1a17
-    style EX fill:#f4ede3,stroke:#6b5b4f,color:#1f1a17
-    style RU fill:#e8dcc8,stroke:#6b5b4f,color:#1f1a17
-    style JA fill:#efe4d4,stroke:#6b5b4f,color:#1f1a17
-    style MI fill:#d6cfbf,stroke:#6b5b4f,color:#1f1a17
+    style Polyglot fill:none,stroke:#546575,color:#16202c
+    style EX fill:#e8f0f7,stroke:#546575,color:#16202c
+    style RU fill:#d9e5f0,stroke:#546575,color:#16202c
+    style JA fill:#e2ebf4,stroke:#546575,color:#16202c
+    style MI fill:#cddbe9,stroke:#546575,color:#16202c
 {% end %}
 
 Each language is used where it's strongest. The interop cost is minimal: Rust runs in-process via NIF (sub-microsecond call overhead), Java runs as a subprocess (acceptable for I/O-bound signing operations that take hundreds of milliseconds anyway).
