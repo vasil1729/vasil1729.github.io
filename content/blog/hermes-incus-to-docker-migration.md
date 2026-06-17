@@ -6,6 +6,9 @@ updated = 2026-06-18
 
 [taxonomies]
 tags = ["docker", "security", "incus", "ai-agent", "infrastructure"]
+
+[extra]
+generated = true
 +++
 
 ## The Problem Space
