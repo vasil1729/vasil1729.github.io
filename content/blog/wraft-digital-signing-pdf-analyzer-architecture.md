@@ -3,6 +3,7 @@ title = "Inside Wraft: How We Built Digital Signing, PDF Analysis, and the Elixi
 description = "A deep architectural walkthrough of Wraft's digital signing pipeline — from Rust NIFs that parse PDF geometry, through Java signing JARs, to Elixir/Oban workflow orchestration — and how every piece connects."
 date = 2026-06-15
 updated = 2026-06-17
+[taxonomies]
 tags = ["elixir", "rust", "pdf", "digital-signing", "nif", "architecture", "wraft"]
 
 [extra]
