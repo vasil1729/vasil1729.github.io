@@ -4,6 +4,9 @@ description = "A debugging story about orphaned processes, memory pressure, and 
 date = 2026-06-15
 updated = 2026-06-16
 
+[taxonomies]
+tags = ["debugging", "linux", "ai-agent", "docker", "infrastructure"]
+
 [extra]
 generated = true
 canonical = ""

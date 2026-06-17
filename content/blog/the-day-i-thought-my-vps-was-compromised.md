@@ -4,6 +4,9 @@ description = "SSH stopped working. Telegram revoked my bot token. My AI assista
 date = 2026-06-15
 updated = 2026-06-15
 
+[taxonomies]
+tags = ["linux", "debugging", "ssh", "infrastructure"]
+
 [extra]
 generated = true
 canonical = ""

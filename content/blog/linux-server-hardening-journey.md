@@ -4,6 +4,9 @@ description = "A real-world walkthrough of securing a production Ubuntu server â
 date = 2026-06-15
 updated = 2026-06-15
 
+[taxonomies]
+tags = ["linux", "security", "docker", "infrastructure"]
+
 [extra]
 generated = true
 canonical = ""
