@@ -8,11 +8,19 @@ updated = 2026-06-18
 tags = ["docker", "security", "incus", "ai-agent", "infrastructure"]
 +++
 
-## What This Is
+## The Problem Space
 
-This is the story of migrating a production AI agent — an autonomous system that takes untrusted Telegram input, executes tools, runs cron jobs, and manages its own codebase — from an Incus container to a hardened Docker Compose stack.
+Autonomous AI agents are not static websites or CI runners. They receive untrusted input from the outside world (in this case, Telegram messages), execute tools against that input (shell commands, file operations, API calls), manage their own codebase (self-modification via tool calls), and run scheduled jobs. Every Telegram message is a potential attack vector — prompt injection can trick the agent into issuing a malicious tool call, which means RCE from a chat message is a realistic threat.
 
-It's not a theoretical exercise. It's what one real server looked like, what I found when I looked closely at the threat model, and what I changed.
+The core architectural tension is:
+
+**You need to give the agent enough access to be useful** (code modification, tool execution, network access to LLM APIs), **but limit the blast radius if that access is abused** via an injected prompt.
+
+This tension applies to any autonomous agent deployment, regardless of the specific software being used. The problem isn't about hermes-agent specifically — it's about how you isolate a process that must simultaneously hold sensitive credentials, write to its own code directory, and accept untrusted input.
+
+Containerization solves part of it (namespace isolation, cgroup limits), but the default container posture — writable rootfs, full capability set, no network segmentation — is designed for general-purpose workloads, not high-risk processes. The Incus container that hosted the agent before this migration had the same flat trust model as any default Docker container: one compromise, everything gone.
+
+The solution is to think in terms of blast radius reduction rather than perfect prevention. No practical deployment can stop a kernel 0-day. But you can make the common attack chain — prompt injection → tool call RCE → privilege escalation → lateral movement → persistence — fail at the first few steps by stripping the container of everything it doesn't explicitly need.
 
 ---
 
@@ -247,56 +255,6 @@ Key lessons:
 
 ---
 
-## Docker Compose Security Configuration
-
-Key security properties applied across all services:
-
-```yaml
-x-security: &security
-  security_opt:
-    - no-new-privileges:true
-  cap_drop:
-    - ALL
-
-networks:
-  db_net:
-    internal: true
-  backend_net:
-```
-
-The gateway and gbrain have the most restrictive profile:
-```yaml
-gateway: &service-hard
-  cap_drop: ALL
-  read_only: true
-  tmpfs: [/tmp]
-  mem_limit: 2g
-
-gbrain:
-  <<: *service-hard
-  mem_limit: 1g
-```
-
-Postgres and Redis each add back only the capabilities they need:
-```yaml
-postgres:
-  cap_drop: ALL
-  cap_add: [CHOWN, DAC_OVERRIDE, FOWNER, SETUID, SETGID]
-
-redis:
-  cap_drop: ALL
-  cap_add: [DAC_OVERRIDE, FOWNER, SETUID, SETGID]
-```
-
-Getting these capability sets right required trial and error:
-- **Postgres** needs `DAC_OVERRIDE` and `FOWNER` to read/write its data directory when running as a non-root user — `CHOWN` alone is not sufficient
-- **Redis** needs `DAC_OVERRIDE` for its entrypoint's `find` command on the AOF directory
-- **Postgres must initialize its data directory** — if the data directory was previously owned by a different UID (e.g. UID 70 from an Incus Postgres), even `DAC_OVERRIDE` won't help; you must clear and recreate it
-
-No service has `SYS_ADMIN`, `NET_ADMIN`, or any of the capabilities commonly used in container escape exploits.
-
----
-
 ## What Went Wrong (and How I Fixed It)
 
 This section didn't exist in the original migration plan. It's here because the plan didn't survive contact with reality.
@@ -327,13 +285,13 @@ After a clean shutdown, gbrain refused to start: "Timed out waiting for PGLite l
 
 ### 5. Hardcoded Paths in Config
 
-The gbrain `config.json` from the Incus container had `"database_path": "/home/vasil/.gbrain/brain.pglite"`. In Docker, the data is mounted at `/home/gbrain/.gbrain/`. With `read_only: true` and the old path pointing to a non-existent directory, gbrain tried to create `/home/vasil/` and failed with `EROFS`.
+The gbrain `config.json` from the Incus container had `"database_path": "/home/<user>/.gbrain/brain.pglite"` — a hardcoded absolute path from the old container's filesystem. In Docker, the data is mounted at `/home/gbrain/.gbrain/`. With `read_only: true` and the old path pointing to a non-existent directory, gbrain tried to create `/home/<user>/` and failed with `EROFS`.
 
 **Fix**: Update `config.json` to point to `/home/gbrain/.gbrain/brain.pglite`.
 
 ### 6. The Great Postgres Data Directory
 
-The Incus container's Postgres data was owned by UID 70 (the `postgres` user in Ubuntu). On the host, this showed as `drwx------ 19 70 vasil`. In Docker, the `postgres:16-alpine` image runs as UID 999. With `cap_drop: ALL`, the container couldn't read the directory, and I couldn't `rm -rf` it from the host because I wasn't UID 70.
+The Incus container's Postgres data was owned by UID 70 (the `postgres` user in Ubuntu). On the host, this showed as `drwx------ 19 70` owned by an unknown user. In Docker, the `postgres:16-alpine` image runs as UID 999. With `cap_drop: ALL`, the container couldn't read the directory, and I couldn't `rm -rf` it from the host because I wasn't UID 70.
 
 **Fix**: Run an Alpine container as root to delete and recreate the directory inside the bind mount.
 
@@ -423,7 +381,7 @@ What changed is the **practical blast radius**:
 | RCE via prompt injection | Full shell, all capabilities | Python process, 0 capabilities, read-only rootfs |
 | Write a backdoor | `wget ... && chmod +x` | Fails — rootfs is read-only |
 | Explore the network | Full access to bridge, can scan host | Only sees `db_net` (Postgres:5432, Redis:6379) |
-| Dump credentials | `cat /home/vasil/.hermes/.env` | Only the gateway's env vars — not Postgres/Redis root |
+| Dump credentials | `cat ~/.hermes/.env` | Only the gateway's env vars — not Postgres/Redis root |
 | Pivot to host | Can try kernel exploits with all syscalls | Seccomp + no-caps blocks most known escape paths |
 | Persist after restart | Backdoor survives in `/usr/bin/` | Volume is the only writable path; ephemeral rootfs |
 
