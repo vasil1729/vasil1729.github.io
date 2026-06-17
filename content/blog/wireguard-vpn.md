@@ -7,7 +7,6 @@ date = 2026-06-18
 tags = ["wireguard", "vpn", "docker", "privacy"]
 
 [extra]
-generated = true
 +++
 
 Most VPN protocols you've heard of — OpenVPN, IPsec, L2TP — were designed in the 1990s and early 2000s. They run in userspace, make dozens of context switches per packet, and rely on complex handshake state machines with sprawling codebases. OpenVPN alone is over 600,000 lines of code. IPsec has four separate protocol specifications, each with multiple modes and options that may or may not be implemented by any given peer.

@@ -8,7 +8,6 @@ updated = 2026-06-15
 tags = ["linux", "security", "docker", "infrastructure"]
 
 [extra]
-generated = true
 canonical = ""
 +++
 

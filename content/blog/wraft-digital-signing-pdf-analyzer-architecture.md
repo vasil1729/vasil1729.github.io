@@ -7,7 +7,6 @@ updated = 2026-06-17
 tags = ["elixir", "rust", "pdf", "digital-signing", "nif", "architecture", "wraft"]
 
 [extra]
-generated = true
 canonical = ""
 +++
 

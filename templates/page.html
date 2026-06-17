@@ -64,9 +64,7 @@
       <div class="post-content">
         {{ page.content | safe }}
       </div>
-      {% if page.extra.generated %}
-        <div class="ai-notice">Note: This article was developed using AI-assisted research and drafting. Technical validation, opinions, and final editorial decisions are my own.</div>
-      {% endif %}
+
     </article>
     <aside class="post-toc" aria-label="Table of contents" data-toc>
       <div class="post-toc-label">On this page</div>
@@ -74,6 +72,7 @@
     </aside>
   </main>
   <footer class="shell footer">
+    <div class="footer-note">I use a variety of tools, including AI assistants and agents, during research, development, and writing. All content published on this site is reviewed and approved by me.</div>
     <div>Copyright &copy; 2026 Vasil Abdul Razak.</div>
     <div class="footer-links">
         <a href="/">Home</a>

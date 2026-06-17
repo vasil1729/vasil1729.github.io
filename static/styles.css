@@ -555,6 +555,15 @@ h2 {
   color: var(--muted);
 }
 
+.footer-note {
+  width: 100%;
+  margin-bottom: 16px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
 .reveal {
   opacity: 0;
   transform: translateY(18px);
@@ -677,18 +686,6 @@ h2 {
   font-size: 1.05rem;
   line-height: 1.75;
   color: #2a3a4a;
-}
-
-.ai-notice {
-  margin-top: 40px;
-  padding: 14px 18px;
-  font-size: 0.82rem;
-  color: #6b7b8b;
-  background: #f8f9fa;
-  border-left: 3px solid #b0b8c4;
-  border-radius: 4px;
-  line-height: 1.5;
-  font-style: italic;
 }
 
 .post-content h2 {
@@ -1126,12 +1123,6 @@ html.dark .quote-card {
 
 html.dark .post-content {
   color: #d3c7b6;
-}
-
-html.dark .ai-notice {
-  color: #8b9bab;
-  background: #1e1e2e;
-  border-left-color: #4a5568;
 }
 
 html.dark .post-content a {
