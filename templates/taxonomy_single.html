@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>#{{ term.name }} — Vasil Abdul Razak</title>
+  <meta name="description" content="All posts tagged #{{ term.name }}" />
+  <meta name="robots" content="index, follow" />
+  <link rel="icon" type="image/png" href="/imgs/avatar.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script>!function(){var t=localStorage.getItem("theme");(t==="dark"||(!t&&matchMedia("(prefers-color-scheme:dark)").matches))&&document.documentElement.classList.replace("light","dark")}()</script>
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="#{{ term.name }}" />
+  <meta property="og:site_name" content="Vasil Abdul Razak" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="shell topbar">
+      <a class="brand" href="/" aria-label="Vasil Abdul Razak home">
+        <span class="brand-name">Vasil Abdul Razak</span>
+        <span class="brand-role">Backend Engineer</span>
+      </a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav" aria-label="Open navigation">
+        <span class="nav-toggle-lines" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+      <nav id="primary-nav" class="nav" aria-label="Primary">
+        <a href="/#overview">Overview</a>
+        <a href="/#experience">Experience</a>
+        <a href="/#projects">Projects</a>
+        <a href="/#skills">Skills</a>
+        <a href="/blog">Blog</a>
+        <a href="/#contact">Contact</a>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <main class="shell">
+    <section class="blog-index">
+      <div class="section-head">
+        <div class="micro-label">Tag</div>
+        <h2>#{{ term.name }}</h2>
+        <p>{{ term.pages | length }} post{{ term.pages | length | pluralize }}</p>
+      </div>
+      <div class="post-list" style="margin-top: 32px;">
+        {% for page in term.pages %}
+          <article class="post-card">
+            <time class="post-date" datetime="{{ page.date | date(format="%Y-%m-%d") }}">{{ page.date | date(format="%b %d, %Y") }}</time>
+            <h3><a href="{{ page.permalink }}">{{ page.title }}</a></h3>
+            <p>{{ page.description }}</p>
+            {% if page.taxonomies.tags %}
+              <div class="stack-tags">
+                {% for tag in page.taxonomies.tags %}
+                  <span class="tag">{{ tag }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  </main>
+  <footer class="shell footer">
+    <div>Copyright &copy; 2026 Vasil Abdul Razak.</div>
+    <div class="footer-links">
+        <a href="/">Home</a>
+      <a href="/blog">Blog</a>
+    </div>
+  </footer>
+  <script src="/script.js"></script>
+</body>
+</html>
