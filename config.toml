@@ -3,8 +3,9 @@ base_url = "https://vasil1729.github.io/"
 compile_sass = false
 build_search_index = false
 
-[taxonomies]
-tags = true
+taxonomies = [
+    {name = "tags"},
+]
 
 [extra]
 author = "Vasil Abdul Razak"
