@@ -181,13 +181,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const revealObserver = new IntersectionObserver((entries, observer) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-          observer.unobserve(entry.target);
+          const el = entry.target;
+          el.classList.add("visible");
+          observer.unobserve(el);
+          // Free the GPU layer once the entrance animation has finished so we
+          // don't keep dozens of will-change layers alive while scrolling.
+          el.addEventListener("transitionend", () => el.classList.add("is-done"), { once: true });
         }
       });
     }, {
-      threshold: 0.1,
-      rootMargin: "0px 0px -50px 0px"
+      // Start the reveal a bit before the element scrolls into view so the
+      // animation has finished by the time it's on screen — this keeps things
+      // smooth even when scrolling medium-fast instead of popping in late.
+      threshold: 0,
+      rootMargin: "0px 0px 15% 0px"
     });
 
     revealElements.forEach((el) => {

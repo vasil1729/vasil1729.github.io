@@ -76,6 +76,11 @@ p {
   backdrop-filter: blur(18px) saturate(140%);
   background: rgba(244, 249, 255, 0.62);
   border-bottom: 1px solid var(--line);
+  /* Promote to its own compositor layer so the blur is re-composited rather
+     than triggering a full-page repaint on every scroll frame. */
+  transform: translateZ(0);
+  will-change: transform;
+  contain: layout paint;
 }
 
 .topbar {
@@ -566,13 +571,22 @@ h2 {
 
 .reveal {
   opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 680ms ease, transform 680ms ease;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity 520ms cubic-bezier(0.16, 1, 0.3, 1),
+              transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+  backface-visibility: hidden;
 }
 
 .reveal.visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* Drop the compositing hint once the element has settled so we don't keep
+   dozens of GPU layers alive (which itself hurts scroll smoothness). */
+.reveal.is-done {
+  will-change: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
