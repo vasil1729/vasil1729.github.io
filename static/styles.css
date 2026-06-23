@@ -736,8 +736,8 @@ h2 {
 }
 
 .post-content pre {
-  background: #121820;
-  color: #f0f7ff;
+  background: #eef3f8;
+  color: var(--text);
   padding: 20px 24px;
   border-radius: 16px;
   overflow-x: auto;
@@ -746,6 +746,7 @@ h2 {
   line-height: 1.6;
   margin: 20px 0;
   max-width: 100%;
+  border: 1px solid var(--line);
 }
 
 .post-content code {
