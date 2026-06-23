@@ -1,5 +1,5 @@
 +++
-title = "Why My WSL Shell Needed `source ~/.zshrc` Every Time (And Why Boot Got Slow)"
+title = "A Loose Cable, a Slow WSL Boot, and a Shell That Kept Losing My PATH"
 description = "A debugging story about running WSL Ubuntu off a flaky external HDD — a slow, fragile .zshrc that lost opencode from PATH, ext4 journal recovery eating the first boot, and 71 crash-orphaned junk files quietly piling up in $HOME."
 date = 2026-06-23
 
