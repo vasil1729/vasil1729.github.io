@@ -25,13 +25,16 @@ What I didn't want was a fragile "it works on my machine" deployment. I needed s
 The deployment runs on a single VPS behind Caddy, which handles TLS termination, HTTP/2, caching, and WebSocket proxying. Inside Docker, everything is segmented into internal and proxy networks.
 
 ```
-Internet → Cloudflare DNS → Caddy (TLS) → Frappe Backend
-                                           ├── MariaDB (internal)
-                                           ├── Redis Cache (internal)
-                                           ├── Redis Queue (internal)
-                                           ├── Redis SocketIO (internal)
-                                           ├── Workers × N (internal)
-                                           └── Scheduler (internal)
+Internet → Cloudflare DNS → Caddy (TLS) → Nginx (frontend)
+                                           ├── /assets/ → static files
+                                           ├── /socket.io/ → WebSocket
+                                           └── / → Frappe Backend (Gunicorn)
+                                                ├── MariaDB (internal)
+                                                ├── Redis Cache (internal)
+                                                ├── Redis Queue (internal)
+                                                ├── Redis SocketIO (internal)
+                                                ├── Workers × N (internal)
+                                                └── Scheduler (internal)
 ```
 
 The key design decisions:
@@ -40,17 +43,22 @@ The key design decisions:
 - **Read-only containers** — all persistent data goes to Docker volumes. Containers are ephemeral.
 - **Drop all capabilities** — containers start with `cap_drop: ALL` and only add back what's strictly needed.
 - **Separate worker replicas** — background jobs scale independently from the web server.
+- **Nginx frontend sidecar** — a separate Nginx container sits in front of the backend. It serves static assets directly (avoiding the Python process for every CSS/JS file) and proxies API/WebSocket traffic to the appropriate upstream.
 - **Configurator pattern** — a one-shot container handles first-run setup (site creation, app installation, configuration), so the main containers have clean startup logic.
 
 ## The Stack
 
 | Component | Image | Role |
 |-----------|-------|------|
-| Frappe/ERPNext | Custom build from `frappe/erpnext:v15.41.0` | Web server (Gunicorn), API, background workers, scheduler |
+| Nginx (frontend) | Same Frappe image | Static asset serving, reverse proxy to backend/websocket |
+| Frappe/ERPNext (backend) | Custom build from `frappe/erpnext:v15.41.0` | Gunicorn web server, API |
+| Workers × N | Same custom image | Background job processing |
+| Scheduler | Same custom image | Scheduled task dispatch |
 | MariaDB | `mariadb:10.8` | Primary database |
-| Redis | `redis:7-alpine` | Cache, job queue, SocketIO pub/sub |
-| Caddy | Host-level | Reverse proxy, TLS, static file serving |
-| Cloudflare | DNS + API | TLS certificate automation via DNS challenge |
+| Redis (×3) | `redis:7-alpine` | Cache, job queue, SocketIO pub/sub |
+| WebSocket | Same custom image | Node.js SocketIO server |
+| Caddy | Host-level | TLS termination, HTTP/2 reverse proxy |
+| Cloudflare | DNS (proxied) | CDN, DDoS protection, edge caching |
 
 ## Building the Custom Image
 
@@ -78,10 +86,10 @@ Frappe has built-in user management, but I wanted a declarative approach. Users 
 
 ```yaml
 users:
-  - email: vasilardev@gmail.com
-    first_name: Vasil
-    last_name: Admin
-    password: "caderousse"
+  - email: admin@example.com
+    first_name: Admin
+    last_name: User
+    password: "<strong-password>"
     role: System Manager
     enabled: 1
 ```
@@ -114,34 +122,87 @@ This stops the web server, restores the database and files, verifies integrity, 
 
 ## Reverse Proxy
 
-Caddy handles the edge with automatic TLS via Cloudflare's DNS challenge:
+### Caddy (Edge)
+
+Caddy terminates TLS and forwards all traffic to the Nginx frontend container:
 
 ```caddy
 hrms.vasil.dpdns.org {
-    tls { dns cloudflare {env.CLOUDFLARE_API_TOKEN} }
-    encode zstd gzip
+    tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
 
     header {
-        Strict-Transport-Security "max-age=31536000"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
         X-Content-Type-Options "nosniff"
         X-Frame-Options "DENY"
         X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
         -Server
     }
 
-    handle /assets/* {
-        root * /home/frappe/frappe-bench/sites
-        file_server
-        header Cache-Control "public, max-age=31536000, immutable"
+    encode zstd gzip
+
+    handle /socket.io/* {
+        reverse_proxy hrms-frontend:8080 {
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+        }
     }
 
     handle {
-        reverse_proxy backend:8000
+        reverse_proxy hrms-frontend:8080 {
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+            header_up X-Forwarded-Port {remote_port}
+        }
     }
 }
 ```
 
-Static assets get aggressive caching (1 year, immutable). Everything else proxies to the Frappe backend with WebSocket support for real-time updates.
+Everything — assets, API, WebSocket — goes to the Nginx sidecar on port 8080. Caddy doesn't serve assets directly; that's Nginx's job.
+
+### Nginx Frontend
+
+Each Frappe site has its assets stored in a shared `assets` Docker volume (symlinks to each app's `public` directory). The Nginx sidecar serves them and proxies everything else to the appropriate container:
+
+```nginx
+server {
+    listen 8080;
+    server_name _;
+
+    client_max_body_size 10M;
+
+    # Static assets with aggressive caching
+    location /assets/ {
+        root /home/frappe/frappe-bench/sites;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri $uri/ @asset_404;
+    }
+
+    # 404 without cache headers — prevents Cloudflare from caching errors
+    location @asset_404 {
+        internal;
+        return 404;
+    }
+
+    # WebSocket
+    location /socket.io/ {
+        proxy_pass http://websocket:9000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    # Everything else → backend
+    location / {
+        proxy_pass http://backend:8000;
+    }
+}
+```
+
+A subtle but critical detail: the `@asset_404` named location returns 404 *without* cache headers. If the `try_files` fallback returned 404 directly in the `/assets/` block, Nginx would add `expires 1y` and `Cache-Control: public, immutable` to the error response — causing Cloudflare to cache the 404 for a year. This happened during initial deployment and took a Cloudflare cache purge to fix.
 
 ## Deployment Walkthrough
 
@@ -202,6 +263,12 @@ make install
 
 **5. Test restores before you need them.** I verified the restore script works by doing a full backup → restore → verify cycle on a staging instance before relying on it for production.
 
+**6. Caddy can't serve Frappe's assets from another container.** Frappe's assets are symlinks inside a Docker volume mounted on the backend/frontend containers. Caddy runs in its own container without access to that volume. An Nginx sidecar sharing the same volumes is the simplest solution — it serves assets from disk and proxies everything else.
+
+**7. Cloudflare will cache your 404s.** If Nginx returns a 404 with `Cache-Control: public, max-age=31536000` (from `expires 1y`), Cloudflare caches that error for a full year. Use a named `@location` to serve 404s without cache headers. Always verify after a cache purge: check `cf-cache-status: MISS` on the first request.
+
+**8. Named volumes for assets need careful mount ordering.** The configurator creates symlinks (`assets/frappe → …/apps/frappe/frappe/public`) in the `sites` volume. A separate `assets` volume is mounted on top of `sites/assets` to hold generated files like `assets.json`. The symlinks survive because they're created into the `assets` volume by the configurator.
+
 ## What's Next
 
 - **S3-compatible backup destination** — push backups to MinIO or Backblaze B2 instead of local disk
@@ -213,7 +280,7 @@ make install
 
 Frappe HRMS is a capable, open-source HR platform that runs well on modest hardware. With Docker Compose, Caddy, and some thoughtful scripting, you get a production-grade deployment that's maintainable, secure, and recoverable.
 
-The full project source is available [on GitHub](https://github.com/yourusername/hrms) — including compose files, scripts, documentation, and everything needed to reproduce this setup.
+The project source is available [on GitHub](https://github.com/vasil1729/hrms) — including compose files, scripts, configuration, and everything needed to reproduce this setup.
 
 ---
 
