@@ -213,7 +213,7 @@ A subtle but critical detail: the `@asset_404` named location returns 404 *witho
 apt update && apt install -y docker.io docker-compose-v2 git
 
 # Clone the project
-git clone <repo-url> hrms
+git clone https://github.com/vasil1729/hrms.git
 cd hrms
 
 # Configure
