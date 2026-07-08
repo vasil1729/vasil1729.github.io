@@ -282,6 +282,3 @@ Frappe HRMS is a capable, open-source HR platform that runs well on modest hardw
 
 The project source is available [on GitHub](https://github.com/vasil1729/hrms) — including compose files, scripts, configuration, and everything needed to reproduce this setup.
 
----
-
-*Part of my self-hosting series. Previously: [Hermes Agent Optimization](@/blog/hermes-agent-optimization.md)*
