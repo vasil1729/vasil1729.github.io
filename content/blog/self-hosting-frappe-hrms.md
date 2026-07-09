@@ -280,5 +280,5 @@ make install
 
 Frappe HRMS is a capable, open-source HR platform that runs well on modest hardware. With Docker Compose, Caddy, and some thoughtful scripting, you get a production-grade deployment that's maintainable, secure, and recoverable.
 
-The project source is available [on GitHub](https://github.com/vasil1729/hrms) — including compose files, scripts, configuration, and everything needed to reproduce this setup.
+The project source is available [on GitHub](https://github.com/vasil1729/hrms/tree/master) — including compose files, scripts, configuration, and everything needed to reproduce this setup.
 
