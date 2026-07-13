@@ -1363,19 +1363,7 @@ h2 {
   }
 }
 
-/* Dark mode */
-:is(.theme-dark, .theme-catppuccin, .theme-tokyo-night, .theme-dracula, .theme-nord, .theme-gruvbox, .theme-rose-pine) {
-  --bg: #1c1814;
-  --panel: rgba(55, 48, 42, 0.80);
-  --text: #f2e8d8;
-  --muted: #b09f8a;
-  --line: rgba(176, 159, 138, 0.16);
-  --accent: #d97a48;
-  --accent-2: #6ec4b2;
-  --accent-3: #ebbf60;
-  --shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
-}
-
+/* Dark-mode element overrides (color variables are defined per-theme above) */
 :is(.theme-dark, .theme-catppuccin, .theme-tokyo-night, .theme-dracula, .theme-nord, .theme-gruvbox, .theme-rose-pine) body {
   background: var(--body-bg);
 }
