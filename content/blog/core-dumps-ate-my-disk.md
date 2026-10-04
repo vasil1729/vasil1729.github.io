@@ -50,30 +50,30 @@ du -xh -d1 / | sort -hr
 `/home` was 68 GB of a 145 GB disk. Drilling in:
 
 ```bash
-du -xh -d1 /home/vasil | sort -hr
+du -xh -d1 /home/user | sort -hr
 ```
 
 ```
-68G     /home/vasil
-65G     /home/vasil/hermes-docker
-1.2G    /home/vasil/matrix
-1003M   /home/vasil/.local
+68G     /home/user
+65G     /home/user/hermes-stack
+1.2G    /home/user/matrix
+1003M   /home/user/.local
 ```
 
-One directory — `hermes-docker` — held 65 GB. Inside it:
+One directory — `hermes-stack` — held 65 GB. Inside it:
 
 ```bash
-du -sh /home/vasil/hermes-docker/data/hermes/*
+du -sh /home/user/hermes-stack/data/gateway/*
 ```
 
 ```
-65G     /home/vasil/hermes-docker/data/hermes
+65G     /home/user/hermes-stack/data/gateway
 ```
 
 And inside *that*:
 
 ```bash
-ls /home/vasil/hermes-docker/data/hermes/core.* | wc -l
+ls /home/user/hermes-stack/data/gateway/core.* | wc -l
 ```
 
 ```
@@ -105,7 +105,7 @@ The trade-off is size. The dump contains the process's *whole* address space —
 1. **`ulimit -c unlimited`** — inside the container, core dumps were unlimited:
 
    ```bash
-   docker exec hermes-docker-gateway-1 sh -c 'ulimit -c'
+   docker exec hermes-gateway-1 sh -c 'ulimit -c'
    ```
    ```
    unlimited
@@ -122,7 +122,7 @@ The trade-off is size. The dump contains the process's *whole* address space —
 
    A process that crashes once is an incident. A process that crashes 115 times in 48 hours, with restart policy `unless-stopped`, is a disk-filling machine.
 
-3. **The dumps landed on the host disk.** The container's working directory was `/home/hermes`, which is a bind mount of `./data/hermes` on the host. Every dump the kernel wrote "inside" the container physically landed in `/home/vasil/hermes-docker/data/hermes` — no container size limit, no image quota, just raw ext4.
+3. **The dumps landed on the host disk.** The container's working directory was `/home/gateway`, which is a bind mount of `./data/gateway` on the host. Every dump the kernel wrote "inside" the container physically landed in `/home/user/hermes-stack/data/gateway` — no container size limit, no image quota, just raw ext4.
 
 The math:
 
@@ -143,7 +143,7 @@ And the smoking gun for the outage: **252 of the 367 files were zero bytes.** Th
 Core dumps from a crash that happened weeks ago are dead weight. Unless I was about to sit down with `gdb` to dissect a two-week-old segfault, there was no reason to keep them:
 
 ```bash
-rm -f /home/vasil/hermes-docker/data/hermes/core.*
+rm -f /home/user/hermes-stack/data/gateway/core.*
 ```
 
 ```
@@ -171,7 +171,7 @@ Then recreated the container and verified:
 
 ```bash
 docker compose up -d gateway
-docker exec hermes-docker-gateway-1 sh -c 'ulimit -c'
+docker exec hermes-gateway-1 sh -c 'ulimit -c'
 ```
 
 ```
