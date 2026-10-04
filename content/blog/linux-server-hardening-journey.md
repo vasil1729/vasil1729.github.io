@@ -67,7 +67,7 @@ The config already had good defaults worth noting:
 - `MaxAuthTries 3` — kick after 3 failed attempts
 - `MaxSessions 2` — limit concurrent sessions
 - `ClientAliveInterval 300` + `ClientAliveCountMax 2` — drop dead connections after 10 minutes
-- `AllowUsers vasil root` — whitelist which users can SSH
+- `AllowUsers <user> root` — whitelist which users can SSH
 - `LogLevel VERBOSE` — log fingerprints and key details
 - All forwarding disabled — no port forwarding, X11, or agent forwarding
 

@@ -20,7 +20,7 @@ I decided to profile it properly — measure what it actually uses, find what's 
 The first tool in any Docker resource investigation is `docker stats`:
 
 ```bash
-docker stats hermes-docker-gateway-1 --no-stream
+docker stats hermes-gateway-1 --no-stream
 ```
 
 What I saw:
@@ -34,10 +34,10 @@ What I saw:
 
 The gateway was using **423 MB RSS** — well within its 2 GB limit. The limit itself was the problem: 2 GB was 4.7× the actual usage, reserving capacity that the host could use for other containers (Matrix, Gitea, databases, and a Telegram bot all share the same VPS).
 
-But RSS is only part of the picture. I also checked disk footprint inside the mounted `data/hermes/` volume:
+But RSS is only part of the picture. I also checked disk footprint inside the mounted `data/gateway/` volume:
 
 ```bash
-du -sh ~/hermes-docker/data/hermes/*/
+du -sh ~/hermes-stack/data/gateway/*/
 ```
 
 | Path | Size | Suspect |
@@ -182,11 +182,11 @@ This is still generous enough for multi-step tool-using conversations, but preve
 ### Change 6: Remove the stale repo and test artifacts
 
 ```bash
-rm -rf ~/hermes-docker/data/hermes/hermes-agent/       # 268 MB — stale clone
-rm -rf ~/hermes-docker/data/hermes/profiles/bench*      # ~2.25 GB — test profiles
-rm -rf ~/hermes-docker/data/hermes/bench_*              # ~52 MB — leftover test data
-rm -rf ~/hermes-docker/data/hermes/.cache/pip/          # 223 MB — pip cache
-rm -rf ~/hermes-docker/phase*.py                        # test scripts in deploy root
+rm -rf ~/hermes-stack/data/gateway/hermes-agent/       # 268 MB — stale clone
+rm -rf ~/hermes-stack/data/gateway/profiles/bench*      # ~2.25 GB — test profiles
+rm -rf ~/hermes-stack/data/gateway/bench_*              # ~52 MB — leftover test data
+rm -rf ~/hermes-stack/data/gateway/.cache/pip/          # 223 MB — pip cache
+rm -rf ~/hermes-stack/phase*.py                        # test scripts in deploy root
 ```
 
 Total reclaimed: **~2.8 GB** of disk.
@@ -231,10 +231,10 @@ The disk savings came from deleting stale clones, test artifacts, and caches. Th
 
 ```bash
 # Check container resource usage
-docker stats hermes-docker-gateway-1 --no-stream
+docker stats hermes-gateway-1 --no-stream
 
 # Inspect Docker memory config
-docker inspect hermes-docker-gateway-1 | python3 -c "
+docker inspect hermes-gateway-1 | python3 -c "
 import sys, json; d = json.load(sys.stdin)[0]
 print('mem_limit:', d['HostConfig']['Memory'])
 print('mem_reservation:', d['HostConfig']['MemoryReservation'])
@@ -243,7 +243,7 @@ print('mem_reservation:', d['HostConfig']['MemoryReservation'])
 # Check SQLite database page count vs free pages
 python3 -c "
 import sqlite3
-conn = sqlite3.connect('data/hermes/state.db')
+conn = sqlite3.connect('data/gateway/state.db')
 conn.execute('PRAGMA synchronous=NORMAL')
 conn.execute('PRAGMA cache_size=-64000')
 for p in ['journal_mode', 'synchronous', 'cache_size', 'auto_vacuum',
@@ -256,7 +256,7 @@ conn.close()
 # VACUUM + REINDEX state.db
 python3 -c "
 import sqlite3
-conn = sqlite3.connect('data/hermes/state.db')
+conn = sqlite3.connect('data/gateway/state.db')
 conn.execute('PRAGMA auto_vacuum=INCREMENTAL')
 conn.execute('VACUUM')
 conn.execute('REINDEX')
@@ -269,5 +269,5 @@ print('VACUUM + REINDEX complete')
 docker compose build gateway && docker compose up -d gateway
 
 # View state.db size on host
-ls -lh ~/hermes-docker/data/hermes/state.db
+ls -lh ~/hermes-stack/data/gateway/state.db
 ```

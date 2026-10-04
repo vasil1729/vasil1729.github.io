@@ -95,7 +95,7 @@ My `.zshrc` exported `opencode`'s directory near the very **bottom** of the file
 
 ```bash
 # ...line 202 of ~/.zshrc...
-export PATH=/home/ultimatum/.opencode/bin:$PATH
+export PATH=/home/<user>/.opencode/bin:$PATH
 ```
 
 That line sits *after* all the slow, disk-heavy work (`nvm`, `compinit`, `asdf`, plugin sourcing). On a flaky external disk, `.zshrc` runs slowly — and if the connection hiccups mid-load, zsh never reaches the bottom of the file. The shell comes up "working" (the prompt appears) but the last PATH exports never ran.

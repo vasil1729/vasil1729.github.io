@@ -127,7 +127,7 @@ This stops the web server, restores the database and files, verifies integrity, 
 Caddy terminates TLS and forwards all traffic to the Nginx frontend container:
 
 ```caddy
-hrms.vasil.dpdns.org {
+hrms.example.com {
     tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
 
     header {
