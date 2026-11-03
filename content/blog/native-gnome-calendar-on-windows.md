@@ -135,5 +135,6 @@ The port is experimental, and the source is available:
 - Build guide: <https://github.com/vasil1729/gnome-calendar/blob/windows-native-port/WINDOWS.md>
 - OpenWiki documentation: <https://github.com/vasil1729/gnome-calendar/tree/windows-native-port/openwiki>
 - Upstream GNOME Calendar: <https://gitlab.gnome.org/GNOME/gnome-calendar>
+- Prebuilt Windows zip: <https://github.com/vasil1729/gnome-calendar/releases/tag/windows-native-2026-11-03>
 
 If you want the full build story, the repository contains the MSYS2 setup script, the EDS build script, the GNOME Calendar build script, the bundle assembler, the GeoClue and UUID shims, the native launcher, and the complete Evolution Data Server patch. It is a lot of plumbing for a small calendar, but the result is a fast, native calendar that stays out of the way.
